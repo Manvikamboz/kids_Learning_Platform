@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story World</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        /* Custom font and base styles */
+        
+        body {
+            font-family: 'Fredoka One', cursive;
+            background-color: #361169;
+            color: #ffffff;
+        }
+        
+        :root {
+            --primary-color: #F09738;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .mascot-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar-track { background: #4A1E8C; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ffb154; }
+
+        .imgcon{
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 transition-opacity duration-500 ease-in-out" style="opacity: 0;">
+
+    <!-- Header with Mascot -->
+    <header class="sticky top-4 z-50 w-full max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl p-4 flex items-center gap-4">
+        <div id="mascot" class="mascot-float transition-transform duration-300 hover:scale-110 cursor-pointer flex-shrink-0">
+             <svg width="100" height="110" viewBox="0 0 150 180" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M128.5 76.5C133.5 61.5 125 47.5 119 43C113 38.5 106 43 106 43L111 68L128.5 76.5Z" fill="#9B59B6"/><path d="M21.5 76.5C16.5 61.5 25 47.5 31 43C37 38.5 44 43 44 43L39 68L21.5 76.5Z" fill="#9B59B6"/><path d="M117.433 138.995C113.833 144.328 107.5 147.5 102.5 147.5C92.5 147.5 86.5 137.5 82 135.5C77.5 133.5 72.5 133.5 68 135.5C63.5 137.5 57.5 147.5 47.5 147.5C42.5 147.5 36.1667 144.328 32.5667 138.995C24.4667 127.095 24.1667 101.5 24.1667 101.5C36.6667 96.5 75 95.5 125.833 101.5C125.833 101.5 125.533 127.095 117.433 138.995Z" fill="#8E44AD"/><ellipse cx="75" cy="100" rx="60" ry="65" fill="#8E44AD"/><ellipse cx="75" cy="115" rx="45" ry="40" fill="#9B59B6"/><path d="M75 35C72.3333 30.3333 71.5 19.5 75 15C78.5 19.5 77.6667 30.3333 75 35Z" fill="#8E44AD"/><path d="M90 30C86.5 24.5 82.5 15 88 10C93.5 15 93.5 24.5 90 30Z" fill="#8E44AD"/><path d="M60 30C63.5 24.5 67.5 15 62 10C56.5 15 56.5 24.5 60 30Z" fill="#8E44AD"/><circle cx="58" cy="70" r="18" fill="white"/><circle cx="92" cy="70" r="18" fill="white"/><path d="M75 82C81.5 85 85 82.8333 87 80C82.5 79.5 67.5 79.5 63 80C65 82.8333 68.5 85 75 82Z" fill="#F09738"/><path d="M75 75C85 75 87 80 87 80C82.5 79.5 67.5 79.5 63 80C63 80 65 75 75 75Z" fill="#F39C12"/><g id="mascot-eyes"><circle cx="58" cy="70" r="9" fill="#2C3E50"/><circle cx="92" cy="70" r="9" fill="#2C3E50"/></g><path d="M57 159C57 163.418 53.4183 167 49 167C44.5817 167 41 163.418 41 159C41 156.5 44 152 49 152C54 152 57 156.5 57 159Z" fill="#F09738"/><path d="M109 159C109 163.418 105.418 167 101 167C96.5817 167 93 163.418 93 159C93 156.5 96 152 101 152C106 152 109 156.5 109 159Z" fill="#F09738"/></svg>
+        </div>
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--primary-color);">Welcome to Story World!</h1>
+            <p class="text-md md:text-lg">I'm Pappy! Choose a category below to start reading!</p>
+        </div>
+    </header>
+
+    <!-- Main container for story categories -->
+    <main class="w-full max-w-5xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Category Card Template -->
+        <a href="space_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Space Stories</h2>
+                <p class="text-lg">Zoom through galaxies, meet silly aliens, and explore bouncy planets!</p>
+            </div>
+        </a>
+        <a href="monument_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+             <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Monument Stories</h2>
+                <p class="text-lg">Uncover the secrets of the Taj Mahal, the Great Wall, and more!</p>
+            </div>
+        </a>
+        <a href="moral_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Moral Stories</h2>
+                <p class="text-lg">Learn about kindness, sharing, and being a good friend.</p>
+            </div>
+        </a>
+        <a href="civics_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Civic Sense Stories</h2>
+                <p class="text-lg">Discover how being a good citizen can be a superpower!</p>
+            </div>
+        </a>
+        <a href="facts_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Fun Facts Stories</h2>
+                <p class="text-lg">Prepare to be amazed by the weirdest facts in the universe!</p>
+            </div>
+        </a>
+        <a href="history_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">History Stories</h2>
+                <p class="text-lg">Travel back in time to meet inventors and explore ancient cities.</p>
+            </div>
+        </a>
+        <a href="geography_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Geography Stories</h2>
+                <p class="text-lg">Journey from the tallest mountains to the deepest oceans.</p>
+            </div>
+        </a>
+        <a href="sports_stories.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Sports Stories</h2>
+                <p class="text-lg">Read about amazing athletes and the spirit of the game!</p>
+            </div>
+        </a>
+        <a href="mystery.html" class="bg-white/10 backdrop-blur-sm rounded-3xl shadow-lg hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
+            <div class="p-6 bg-black bg-opacity-20">
+                <img class="imgcon" src="./Asset/Images/space-stories.png" >
+            </div>
+            <div class="p-6">
+                <h2 class="text-2xl font-bold mb-2" style="color: var(--primary-color);">Sports Stories</h2>
+                <p class="text-lg">Read about amazing athletes and the spirit of the game!</p>
+            </div>
+        </a>
+    </main>
+
+    <script>
+        const mascot = document.getElementById('mascot');
+        const mascotEyes = document.getElementById('mascot-eyes');
+        
+        document.addEventListener('mousemove', (e) => {
+            const mascotRect = mascot.getBoundingClientRect();
+            const mascotCenterX = mascotRect.left + mascotRect.width / 2;
+            const mascotCenterY = mascotRect.top + mascotRect.height / 2;
+            const angle = Math.atan2(e.clientY - mascotCenterY, e.clientX - mascotCenterX);
+            const moveX = Math.cos(angle) * 5;
+            const moveY = Math.sin(angle) * 3;
+            mascotEyes.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
+
+
+
+

@@ -5,6 +5,18 @@
     box-sizing: border-box;
 }
 
+/* 1. Set the default custom cursor for the whole page */
+body {
+    /* Sets image1 as the cursor */
+    cursor: url('../Assets/Images/cur2.png'); 
+}
+
+/* 2. Set a different cursor for links and buttons on hover */
+a:hover,button:hover {
+    /* Changes to image2 on hover */
+    cursor: url('../Assets/Images/cur1.png'); 
+}
+
 :root {
     --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -918,6 +930,7 @@ body {
 /* World Page */
 .world-header {
     display: flex;
+    gap:40px;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 40px;
