@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Hunt Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & Typography --- */
+        :root {
+            --bg-color: #361169;
+            --text-color: #ffffff;
+            --primary-color: #F09738;
+            --secondary-color: #532093;
+            --error-color: #ff6b6b;
+            --success-color: #51cf66;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, #2c0d58, #361169, #532093);
+            background-size: 400% 400%;
+            animation: animate-bg 15s ease infinite;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            overflow: hidden;
+            transition: background 1s ease-in-out;
+        }
+
+        /* --- Main Game Container & Views --- */
+        .game-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            background-color: var(--secondary-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 1s ease-in-out;
+        }
+
+        .game-view, .win-view {
+            display: none; /* Controlled by JS */
+        }
+
+        .view-active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* --- Header & Stats --- */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: rgba(0,0,0,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stats-display svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        /* --- Sound Toggle --- */
+        .sound-toggle {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .sound-toggle-label {
+            margin-right: 0.5rem;
+            font-weight: 600;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+
+        /* --- Level Content --- */
+        .level-content {
+            text-align: center;
+        }
+        
+        #intro-text {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-style: italic;
+            opacity: 0.8;
+            min-height: 70px;
+        }
+
+        #question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+            min-height: 84px; /* Prevents layout shift */
+        }
+
+        /* --- Input & Forms --- */
+        .answer-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        #answer-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background-color: rgba(0,0,0,0.2);
+            color: var(--text-color);
+            font-size: 1rem;
+            font-family: var(--font-family);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #answer-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(240, 151, 56, 0.5);
+        }
+
+        #answer-input.shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hint-controls {
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- Feedback & Messages --- */
+        #feedback-message {
+            min-height: 24px;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            transition: opacity 0.3s;
+        }
+
+        #feedback-message.visible {
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #feedback-message.correct { color: var(--success-color); }
+        #feedback-message.incorrect { color: var(--error-color); }
+        #feedback-message.hint { color: var(--text-color); }
+        
+        /* --- Win Screen --- */
+        .win-view {
+            text-align: center;
+            position: relative;
+        }
+
+        #confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 16px;
+            background: #f09738;
+            top: -20px;
+            animation: confetti-fall 5s linear infinite;
+        }
+
+        .treasure-chest-svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        .win-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .win-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .final-stats {
+            background: rgba(0,0,0,0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .final-stats p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .final-stats strong {
+            color: var(--primary-color);
+        }
+
+        /* --- Animations --- */
+        @keyframes animate-bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-change-out {
+            animation: fadeOut 0.25s ease-in-out forwards;
+        }
+        
+        .level-change-in {
+            animation: fadeIn 0.25s ease-in-out 0.25s forwards; /* Added delay */
+            opacity: 0; /* Start hidden */
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes pop-in {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(400px) rotateZ(720deg); opacity: 0; }
+        }
+        
+        /* --- Accessibility --- */
+        @media (prefers-reduced-motion: reduce) {
+            body, .btn, #answer-input, .level-change-in, .level-change-out, #feedback-message.visible, .confetti {
+                animation: none;
+                transition: none;
+            }
+        }
+        
+        /* --- Media Queries for Responsiveness --- */
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 1.5rem 1rem;
+            }
+            .main-title {
+                font-size: 1.8rem;
+            }
+            #question-text {
+                font-size: 1.2rem;
+                min-height: 70px;
+            }
+            .answer-form {
+                flex-direction: column;
+            }
+            .win-title {
+                font-size: 2rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="game-container">
+
+        <!-- ===== GAME VIEW ===== -->
+        <div id="game-view" class="game-view">
+            <h1 class="main-title">Treasure Hunt Adventure</h1>
+            <header class="game-header">
+                <div id="score-display" class="stats-display">
+                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                    <span>Score: 0 🌟</span>
+                </div>
+                <div class="sound-toggle">
+                    <span class="sound-toggle-label">Sound</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sound-toggle-checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div id="timer-display" class="stats-display">
+                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path></svg>
+                    <span>Time: 0s ⏳</span>
+                </div>
+            </header>
+
+            <main class="level-content">
+                <p id="intro-text" aria-live="polite">The adventure begins...</p>
+                <p id="question-text" aria-live="polite">Loading question...</p>
+                
+                <form id="answer-form" class="answer-form" onsubmit="event.preventDefault(); checkAnswer();">
+                    <input type="text" id="answer-input" placeholder="Type your answer here" required autocomplete="off" aria-label="Your Answer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+                <p id="feedback-message" aria-live="polite">&nbsp;</p>
+
+                <div class="hint-controls">
+                    <button id="hint-btn" class="btn btn-secondary">Get a Hint (-10 pts)</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- ===== WINNER'S VIEW ===== -->
+        <div id="win-view" class="win-view">
+            <div id="confetti-container"></div>
+            <svg class="treasure-chest-svg" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><g><path d="M89.328 34.469h-7.813V24.53c0-3.034-2.463-5.497-5.497-5.497H23.982c-3.034 0-5.497 2.463-5.497 5.497v9.939H10.672c-3.034 0-5.497 2.463-5.497 5.497v38.828c0 3.034 2.463 5.497 5.497 5.497h78.656c3.034 0 5.497-2.463 5.497-5.497V39.966c0-3.034-2.463-5.497-5.497-5.497zM23.982 24.53h52.036v9.939H23.982V24.53zm65.346 54.294H10.672V39.966h7.813v5.497c0 3.034 2.463 5.497 5.497 5.497h52.036c3.034 0 5.497-2.463 5.497-5.497v-5.497h7.813v38.858z" fill="#f09738"></path><path d="M50 45.464c-3.034 0-5.497 2.463-5.497 5.497v13.743c0 3.034 2.463 5.497 5.497 5.497s5.497-2.463 5.497-5.497V50.961c0-3.034-2.463-5.497-5.497-5.497z" fill="#f09738"></path></g></svg>
+            <h1 class="win-title">Congratulations!</h1>
+            <p class="win-subtitle">You've found the treasure! 🏆</p>
+            <div class="final-stats">
+                <p>Final Score: <strong id="final-score">0</strong></p>
+                <p>Total Time: <strong id="final-time">0s</strong></p>
+            </div>
+            <button id="restart-btn" class="btn btn-primary">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        //======================================================================
+        // ADMIN AREA: Edit the story, locations, and riddles here.
+        //======================================================================
+        const storyData = [
+            {
+                name: "The Forgotten Study",
+                intro: "Your adventure begins in a dusty, forgotten study. 📜 Sunlight streams through a grimy window, illuminating a single, locked desk. A riddle is etched into the wood.",
+                question: "I have a spine, but cannot stand. I have pages, but I'm not a calendar. I hold stories, but have no voice. What am I?",
+                answers: ["a book", "book"],
+                hint: "You might find many of these in a library.",
+                themeGradient: "linear-gradient(135deg, #5D4037, #795548, #A1887F)"
+            },
+            {
+                name: "The Sun-Scorched Desert",
+                intro: "The book opens a portal, and you step out onto endless sands. 🏜️ The sun beats down, and in the distance, a shimmering structure beckons. A stone guardian blocks your path.",
+                question: "What can be seen once in a minute, twice in a moment, but never in a thousand years?",
+                answers: ["the letter m", "letter m", "m"],
+                hint: "Focus on the words themselves, not their meaning.",
+                themeGradient: "linear-gradient(135deg, #f5af19, #f12711, #F09738)"
+            },
+            {
+                name: "The Crystal Iceberg",
+                intro: "Past the desert, you find yourself on a massive iceberg, hollowed out with caves of glistening ice. 🧊 The air is cold, and your breath hangs in the air. A message is frozen on a wall.",
+                question: "What is easy to get into, but hard to get out of?",
+                answers: ["trouble"],
+                hint: "It's a state of difficulty or danger.",
+                themeGradient: "linear-gradient(135deg, #00c6ff, #0072ff, #4343A2)"
+            },
+            {
+                name: "The Whispering Woods",
+                intro: "You escape the iceberg and arrive at the edge of an ancient, whispering forest. 🌳 The trees are so tall they block out the sun. An old, wise owl hoots a question from a branch.",
+                question: "The more of this there is, the less you see. What is it?",
+                answers: ["darkness", "the dark", "dark"],
+                hint: "It's the absence of light.",
+                themeGradient: "linear-gradient(135deg, #134E5E, #203A43, #71B280)"
+            }
+        ];
+
+        //======================================================================
+        // GAME CONFIGURATION
+        //======================================================================
+        const POINTS_PER_CORRECT_ANSWER = 50;
+        const HINT_PENALTY = 10;
+        
+        //======================================================================
+        // DOM ELEMENT REFERENCES
+        //======================================================================
+        const gameContainer = document.getElementById('game-container');
+        const gameView = document.getElementById('game-view');
+        const winView = document.getElementById('win-view');
+        
+        const introText = document.getElementById('intro-text');
+        const questionText = document.getElementById('question-text');
+        const answerInput = document.getElementById('answer-input');
+        const hintBtn = document.getElementById('hint-btn');
+        const feedbackMessage = document.getElementById('feedback-message');
+        
+        const scoreDisplay = document.querySelector('#score-display span');
+        const timerDisplay = document.querySelector('#timer-display span');
+        
+        const finalScoreElem = document.getElementById('final-score');
+        const finalTimeElem = document.getElementById('final-time');
+        const restartBtn = document.getElementById('restart-btn');
+
+        const soundToggle = document.getElementById('sound-toggle-checkbox');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        //======================================================================
+        // GAME STATE
+        //======================================================================
+        let currentLevelIndex = 0;
+        let score = 0;
+        let hintTakenThisLevel = false;
+        let timerInterval;
+        let secondsElapsed = 0;
+        let soundEnabled = false;
+        let audioCtx; // For web audio API
+
+        //======================================================================
+        // AUDIO HANDLING
+        //======================================================================
+        function setupAudio() {
+            if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } catch(e) {
+                    console.error("Web Audio API is not supported in this browser");
+                    soundToggle.disabled = true;
+                }
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled || !audioCtx) return;
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+            if (type === 'correct') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+                oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1);
+            } else if (type === 'wrong') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(261.63, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(130.81, audioCtx.currentTime + 0.1);
+            } else if (type === 'win') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                setTimeout(() => oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime), 100);
+                setTimeout(() => oscillator.frequency.setValueAtTime(783.99, audioCtx.currentTime), 200);
+            }
+
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+
+        //======================================================================
+        // GAME LOGIC
+        //======================================================================
+
+        function startGame() {
+            // Set the initial background to match the first level
+            document.body.style.background = storyData[0].themeGradient;
+            
+            currentLevelIndex = 0;
+            score = 0;
+            secondsElapsed = 0;
+            
+            confettiContainer.innerHTML = '';
+            feedbackMessage.textContent = '\u00A0';
+            feedbackMessage.className = '';
+            updateScore();
+            timerDisplay.textContent = `Time: 0s ⏳`;
+            
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            
+            loadLevel(currentLevelIndex);
+            gameView.classList.add('view-active');
+            winView.classList.remove('view-active');
+            
+            answerInput.focus();
+        }
+
+        function loadLevel(levelIndex) {
+            if (levelIndex >= storyData.length) {
+                endGame();
+                return;
+            }
+
+            const levelData = storyData[levelIndex];
+            const contentContainer = document.querySelector('.level-content');
+            
+            // Sync body and container backgrounds
+            document.body.style.background = levelData.themeGradient;
+            gameContainer.style.background = 'rgba(0,0,0,0.2)'; // Use a semi-transparent overlay
+            
+            contentContainer.classList.add('level-change-out');
+            
+            setTimeout(() => {
+                introText.textContent = levelData.intro;
+                questionText.textContent = levelData.question;
+                answerInput.value = '';
+                feedbackMessage.textContent = '\u00A0';
+                feedbackMessage.className = '';
+                hintTakenThisLevel = false;
+                hintBtn.disabled = false;
+                
+                contentContainer.classList.remove('level-change-out');
+                contentContainer.classList.add('level-change-in');
+                
+                answerInput.focus();
+                
+                setTimeout(() => contentContainer.classList.remove('level-change-in'), 500);
+
+            }, 250);
+        }
+
+        function checkAnswer() {
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswers = storyData[currentLevelIndex].answers;
+
+            if (correctAnswers.includes(userAnswer)) {
+                score += POINTS_PER_CORRECT_ANSWER;
+                showFeedback("Correct! You advance... ✅", 'correct');
+                playSound('correct');
+                currentLevelIndex++;
+                setTimeout(() => loadLevel(currentLevelIndex), 1200);
+            } else {
+                score = Math.max(0, score - 5);
+                showFeedback("That's not right. The path remains blocked. ❌", 'incorrect');
+                playSound('wrong');
+                answerInput.classList.add('shake');
+                setTimeout(() => answerInput.classList.remove('shake'), 500);
+                answerInput.value = '';
+            }
+            updateScore();
+        }
+
+        function showHint() {
+            if (!hintTakenThisLevel) {
+                const hint = storyData[currentLevelIndex].hint;
+                showFeedback(`A whisper on the wind says: "${hint}" 💡`, 'hint');
+                score = Math.max(0, score - HINT_PENALTY);
+                updateScore();
+                hintTakenThisLevel = true;
+                hintBtn.disabled = true;
+            }
+        }
+        
+        function showFeedback(message, type) {
+            feedbackMessage.textContent = message;
+            feedbackMessage.className = `${type} visible`;
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score} 🌟`;
+        }
+
+        function updateTimer() {
+            secondsElapsed++;
+            timerDisplay.textContent = `Time: ${secondsElapsed}s ⏳`;
+        }
+        
+        function createConfetti() {
+            const colors = ['#F09738', '#ffffff', '#51cf66', '#ff6b6b'];
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 2}s`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confettiContainer.appendChild(confetti);
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            playSound('win');
+            createConfetti();
+            const winGradient = 'linear-gradient(135deg, #FFD700, #F09738, #c67c2b)';
+            document.body.style.background = winGradient;
+            gameContainer.style.background = 'rgba(0,0,0,0.2)';
+            
+            finalScoreElem.textContent = score;
+            finalTimeElem.textContent = `${secondsElapsed}s`;
+            
+            gameView.classList.remove('view-active');
+            winView.classList.add('view-active');
+        }
+
+        //======================================================================
+        // EVENT LISTENERS
+        //======================================================================
+        document.addEventListener('DOMContentLoaded', startGame);
+        hintBtn.addEventListener('click', showHint);
+        restartBtn.addEventListener('click', startGame);
+
+        soundToggle.addEventListener('change', (e) => {
+            soundEnabled = e.target.checked;
+            if (soundEnabled) {
+                setupAudio();
+            }
+        });
+
+    </script>
+</body>
+</html>
+

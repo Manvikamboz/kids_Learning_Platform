@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Chatbot</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        :root {
+            --background-color: #361169;
+            --text-color: #ffffff;
+            --primary-color: #F09738;
+            --secondary-color: #532093;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* A little intro text on the page itself */
+        .page-content {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .page-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .page-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+
+        /* Chatbot Toggler Button */
+        .chatbot-toggler {
+            position: fixed;
+            right: 35px;
+            bottom: 30px;
+            height: 60px;
+            width: 60px;
+            background: var(--primary-color);
+            border: none;
+            outline: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .chatbot-toggler span {
+            position: absolute;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .chatbot-toggler span svg {
+             width: 32px;
+             height: 32px;
+        }
+
+        body.show-chatbot .chatbot-toggler span:first-child,
+        .chatbot-toggler span:last-child {
+            opacity: 0;
+            transform: rotate(90deg);
+        }
+
+        body.show-chatbot .chatbot-toggler span:last-child {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        /* Chatbot container */
+        .chatbot {
+            position: fixed;
+            right: 35px;
+            bottom: 100px;
+            width: 420px;
+            background: var(--background-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transform: scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+            transform-origin: bottom right;
+            transition: all 0.3s ease-in-out;
+        }
+
+        body.show-chatbot .chatbot {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Chatbot Header */
+        .chatbot header {
+            background: var(--secondary-color);
+            padding: 16px 0;
+            text-align: center;
+            position: relative;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .chatbot header h2 {
+            color: var(--text-color);
+            font-size: 1.4rem;
+        }
+        
+         .chatbot header .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: none; /* Hidden on desktop */
+         }
+
+
+        /* Chatbox message area */
+        .chatbot .chatbox {
+            height: 510px;
+            overflow-y: auto;
+            padding: 30px 20px 130px; /* Increased padding-bottom */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chatbox .chat {
+            display: flex;
+            list-style: none;
+        }
+
+        .chatbox .incoming span {
+            height: 32px;
+            width: 32px;
+            color: var(--text-color);
+            background: var(--secondary-color);
+            border-radius: 4px;
+            text-align: center;
+            line-height: 32px;
+            align-self: flex-end;
+            margin-right: 10px;
+        }
+
+        .chatbox .chat p {
+            color: var(--text-color);
+            max-width: 75%;
+            font-size: 0.95rem;
+            padding: 12px 16px;
+            border-radius: 10px 10px 10px 0;
+            background: var(--secondary-color);
+            white-space: pre-wrap; /* Respects newlines in the text */
+        }
+        
+        .chatbox .chat p.error {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        /* Typing animation */
+        .chatbox .incoming.typing-indicator p {
+            width: 60px;
+            height: 38px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        
+        .typing-indicator p span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.7);
+            animation: pulse 1.5s infinite;
+        }
+
+        .typing-indicator p span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator p span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+
+        .chatbox .outgoing {
+            justify-content: flex-end;
+        }
+
+        .chatbox .outgoing p {
+            background: var(--primary-color);
+            color: #000;
+            border-radius: 10px 10px 0 10px;
+        }
+
+        /* Predefined Questions */
+        .chatbot .predefined-questions {
+            position: absolute;
+            bottom: 60px; /* Sits on top of the chat-input */
+            left: 0;
+            width: 100%;
+            padding: 0 20px 10px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            transition: opacity 0.3s ease;
+            /* Hide scrollbar for a cleaner look */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .chatbot .predefined-questions::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        .predefined-questions button {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: background 0.2s ease, color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .predefined-questions button:hover {
+            background: var(--primary-color);
+            color: #000;
+        }
+
+
+        /* User input area */
+        .chatbot .chat-input {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            gap: 5px;
+            background: var(--background-color);
+            padding: 5px 20px;
+            border-top: 1px solid var(--secondary-color);
+        }
+
+        .chat-input textarea {
+            height: 55px;
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 0.95rem;
+            resize: none;
+            padding: 16px 15px 16px 0;
+            background: transparent;
+            color: var(--text-color);
+        }
+        
+        .chat-input textarea::placeholder {
+            color: #999;
+        }
+
+        .chat-input span {
+            align-self: flex-end;
+            height: 55px;
+            width: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.35rem;
+            color: var(--primary-color);
+        }
+        
+        .chat-input span:hover {
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 490px) {
+            .chatbot {
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+            .chatbot .chatbox {
+                height: 90%;
+            }
+             .chatbot header .close-btn {
+                display: block;
+             }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="page-content">
+        <h1>Welcome to a New World of Learning!</h1>
+        <p>Our interactive platform makes learning about Space, Intuition, Maths, Science, and History an adventure. Got a question? Click the little mascot in the corner to chat with our friendly guide!</p>
+    </div>
+
+    <!-- The chatbot itself -->
+    <div class="chatbot">
+        <header>
+            <h2>Pappy the Guide</h2>
+            <span class="close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </span>
+        </header>
+        <ul class="chatbox">
+            <li class="chat incoming">
+                <span>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 16.17l7.59-7.59L19 10l-9 9z"/></svg>
+                </span>
+                <p>Hi there! I'm Pappy, your friendly learning guide. ✨<br>Ask me anything, or choose a suggestion below to get started!</p>
+            </li>
+        </ul>
+        <div class="predefined-questions">
+            <button>Tell me about Space 🚀</button>
+            <button>What is Maths? 🔢</button>
+            <button>Explain Science 🔬</button>
+            <button>A fun History fact! 🏛</button>
+            <button>What is Intuition? 🧠</button>
+            <button>Are pirates real? 🏴‍☠</button>
+        </div>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." required></textarea>
+            <span id="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </span>
+        </div>
+    </div>
+    
+    <!-- Toggler button -->
+    <button class="chatbot-toggler">
+         <span>
+             <!-- Simplified Mascot SVG -->
+             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="18" r="10" fill="#7B3FDD"/>
+                <circle cx="16" cy="10" r="8" fill="#7B3FDD"/>
+                <path d="M16 8C17.1046 8 18 8.89543 18 10C18 11.1046 17.1046 12 16 12C14.8954 12 14 11.1046 14 10C14 8.89543 14.8954 8 16 8Z" fill="white"/>
+                <path d="M20 8C21.1046 8 22 8.89543 22 10C22 11.1046 21.1046 12 20 12C18.8954 12 18 11.1046 18 10C18 8.89543 18.8954 8 20 8Z" fill="white"/>
+                <path d="M18.5 13C17.6716 13 17 12.3284 17 11.5C17 10.6716 17.6716 10 18.5 10H21.5C22.3284 10 23 10.6716 23 11.5C23 12.3284 22.3284 13 21.5 13H18.5Z" fill="#FFD700"/>
+                <path d="M26 18C28 16 28 20 26 22L20 18Z" fill="#9966CC"/>
+             </svg>
+         </span>
+         <span class="close-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+         </span>
+    </button>
+
+    <script>
+    const chatbotToggler = document.querySelector(".chatbot-toggler");
+    const closeBtn = document.querySelector(".chatbot header .close-btn");
+    const chatbox = document.querySelector(".chatbox");
+    const chatInput = document.querySelector(".chat-input textarea");
+    const sendChatBtn = document.querySelector(".chat-input span");
+    const predefinedQuestionsContainer = document.querySelector(".predefined-questions");
+    
+    let userMessage;
+
+    const createChatLi = (message, className) => {
+        const chatLi = document.createElement("li");
+        chatLi.classList.add("chat", className);
+        let chatContent = className === "outgoing" 
+            ? `<p></p>` 
+            : `<span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 16.17l7.59-7.59L19 10l-9 9z"/></svg></span><p></p>`;
+        chatLi.innerHTML = chatContent;
+        chatLi.querySelector("p").textContent = message;
+        return chatLi;
+    }
+
+    const showTypingIndicator = () => {
+        const typingLi = document.createElement("li");
+        typingLi.classList.add("chat", "incoming", "typing-indicator");
+        typingLi.innerHTML = `
+            <span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 16.17l7.59-7.59L19 10l-9 9z"/></svg></span>
+            <p><span></span><span></span><span></span></p>
+        `;
+        chatbox.appendChild(typingLi);
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+    }
+
+    const removeTypingIndicator = () => {
+        const typingIndicator = chatbox.querySelector(".typing-indicator");
+        if (typingIndicator) typingIndicator.remove();
+    }
+    
+    const generateResponse = (incomingChatLi) => {
+        const messageElement = incomingChatLi.querySelector("p");
+        const lowerCaseMessage = userMessage.toLowerCase();
+        let response = "I'm sorry, I'm not sure how to answer that. I'm still learning! Try asking me about Space, Maths, Science, History, or Intuition.";
+
+        if(lowerCaseMessage.includes("hello") || lowerCaseMessage.includes("hi")) {
+            response = "Hello there! What amazing subject do you want to explore today?";
+        } else if (lowerCaseMessage.includes("space")) {
+            response = "Space is endlessly fascinating! 🚀 Would you like to know a cool fact about black holes, or maybe how astronauts live on the International Space Station?";
+        } else if (lowerCaseMessage.includes("math") || lowerCaseMessage.includes("maths")) {
+            response = "Maths is the secret code of the universe! 🔢 We could explore patterns in nature, like the Fibonacci sequence in sunflowers, or try a fun logic puzzle. What sounds good?";
+        } else if (lowerCaseMessage.includes("science")) {
+            response = "Science is all about asking questions and discovering answers! 🔬 We can learn about why volcanoes erupt, how plants make their own food, or even the science of bubbles!";
+        } else if (lowerCaseMessage.includes("history")) {
+            response = "History is like a time machine made of stories! 🏛 We can discover the secrets of ancient Egypt, learn about legendary pirates, or see how inventions like the printing press changed the world.";
+        } else if (lowerCaseMessage.includes("intuition")) {
+            response = "Intuition is your brain's superpower for making quick guesses! 🧠 We can train it with fun estimation games or by solving 'whodunnit' style logic puzzles. Want to try one?";
+        } else if (lowerCaseMessage.includes("bye") || lowerCaseMessage.includes("goodbye")) {
+            response = "Goodbye! Keep exploring and stay curious!";
+        } else if (lowerCaseMessage.includes("thanks") || lowerCaseMessage.includes("thank you")) {
+            response = "You're very welcome! Is there anything else I can help you explore?";
+        }
+
+        setTimeout(() => {
+            removeTypingIndicator();
+            messageElement.textContent = response;
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+            predefinedQuestionsContainer.style.display = 'flex';
+        }, 1500);
+    }
+
+    const handleChat = () => {
+        userMessage = chatInput.value.trim();
+        if (!userMessage) return;
+        chatInput.value = "";
+        chatInput.style.height = "55px";
+
+        chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+        predefinedQuestionsContainer.style.display = 'none';
+
+        setTimeout(() => {
+            const incomingChatLi = createChatLi("", "incoming");
+            chatbox.appendChild(incomingChatLi);
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+            showTypingIndicator();
+            generateResponse(incomingChatLi);
+        }, 600);
+    }
+    
+    predefinedQuestionsContainer.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+            chatInput.value = e.target.textContent;
+            handleChat();
+        }
+    });
+
+    chatInput.addEventListener("input", () => {
+        chatInput.style.height = "55px";
+        chatInput.style.height = `${chatInput.scrollHeight}px`;
+    });
+    
+    chatInput.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
+            e.preventDefault();
+            handleChat();
+        }
+    });
+
+    chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+    closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
+    sendChatBtn.addEventListener("click", handleChat);
+</script>
+
+</body>
+</html>
