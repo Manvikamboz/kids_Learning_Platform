@@ -7,6 +7,20 @@ class AppManager {
         this.userAnswers = [];
         this.init();
     }
+    //animations
+    startAnimations() {
+        this.animateFloatingIcons();
+        this.animateProgressBars();
+    }
+    
+    animateFloatingIcons() {
+        const icons = document.querySelectorAll('.floating-icon');
+        icons.forEach((icon, index) => {
+            setTimeout(() => {
+                icon.style.animationDelay = `${index * 0.5}s`;
+            }, index * 100);
+        });
+    }
 
     init() {
         this.setupEventListeners();
@@ -208,8 +222,8 @@ class AppManager {
                 },
                 {
                     _id: 'demo-science-3',
-                    title: 'States of Matter',
-                    description: 'Explore solid, liquid, and gas',
+                    title: 'Periodic Table',
+                    description: 'Learn about different Elements',
                     icon: '🧊',
                     difficulty: 'Easy',
                     reward: 30,
@@ -311,23 +325,30 @@ class AppManager {
         `).join('');
     }
 
-    async startLesson(lessonId) {
-        try {
-            const response = await authManager.makeRequest(`/api/learning/lesson/${lessonId}`, 'GET');
-            if (response.ok) {
-                const lesson = await response.json();
-                this.currentLesson = lesson;
-                this.currentQuestionIndex = 0;
-                this.userAnswers = [];
-                this.showLesson(lesson);
-            } else {
-                this.showMessage('Failed to load lesson', 'error');
-            }
-        } catch (error) {
-            console.error('Failed to load lesson:', error);
-            this.showMessage('Network error. Please try again.', 'error');
-        }
+    startLesson(lessonId) {
+    // Map the lesson IDs from your demo data to your HTML file names
+    const lessonPages = {
+        'demo-science-1': 'space.html',    // The Solar System
+        'demo-science-2': 'plant.html',  // Photosynthesis
+        'demo-science-3': 'periodic.html',// States of Matter
+        'demo-math-1': 'addition.html',
+        'demo-math-2': 'multiplication.html',
+        'demo-math-3': 'fraction.html',
+        // Add all your other lesson IDs and their corresponding HTML files here
+    };
+
+    // Find the page URL that matches the clicked lesson's ID
+    const pageUrl = lessonPages[lessonId];
+
+    if (pageUrl) {
+        // If we found a matching page, redirect the browser to it
+        window.location.href = pageUrl;
+    } else {
+        // If the ID isn't in our map, show an error
+        console.error('No HTML page found for lesson ID:', lessonId);
+        this.showMessage('Sorry, this lesson is not available yet!', 'error');
     }
+}
 
     showLesson(lesson) {
         // Show lesson page

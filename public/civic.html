@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Sense Adventure</title>
+    <script src="https://cdn-tailwindcss.vercel.app/"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #361169;
+            color: #ffffff;
+        }
+        .font-nunito {
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        /* Custom Theme Colors */
+        :root {
+            --bg-color: #361169;
+            --text-color: #ffffff;
+            --primary-color: #F09738;
+            --secondary-color: #532093;
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes tada {
+            0% {transform: scale(1);}
+            10%, 20% {transform: scale(0.9) rotate(-3deg);}
+            30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);}
+            40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);}
+            100% {transform: scale(1) rotate(0);}
+        }
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            10%, 30%, 50%, 70%, 90% {transform: translateX(-10px);}
+            20%, 40%, 60%, 80% {transform: translateX(10px);}
+        }
+        @keyframes idle {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.02); }
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .bounce-in { animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-pulse-btn { animation: pulse 2s infinite; }
+        .animate-tada { animation: tada 1s ease-out forwards; }
+        .animate-shake { animation: shake 0.5s ease-in-out forwards; }
+        .animate-idle { animation: idle 3s ease-in-out infinite; }
+        
+        /* Transition for progress bar */
+        .progress-bar-inner {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto">
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center bg-[#532093]/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg fade-in">
+            <h1 class="text-4xl md:text-5xl font-nunito font-extrabold text-[#F09738]">Civic Sense Adventure!</h1>
+            <p class="text-gray-200 mt-4 text-lg">Join Pip the parrot on a journey to become a Super Citizen!</p>
+            <div class="my-8 flex justify-center">
+                 <!-- Mascot SVG -->
+                <svg class="w-40 h-40 animate-idle" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <g class="lavender-parrot">
+                        <!-- Main Body -->
+                        <path fill="#C8A2C8" d="M100,170 C40,170 40,100 70,60 C80,40 100,20 120,30 C140,40 130,70 140,80 C160,100 160,170 100,170 Z"/>
+                        <!-- Wing -->
+                        <path fill="#9370DB" d="M115,90 C100,100 100,130 120,140 C140,150 150,120 140,100 C135,90 125,85 115,90 Z"/>
+                        <!-- Beak -->
+                        <path fill="#F09738" d="M118,30 C125,25 135,30 130,40 C125,45 120,35 118,30 Z"/>
+                        <!-- Eye -->
+                        <circle fill="white" cx="115" cy="55" r="8"/>
+                        <circle fill="black" cx="117" cy="55" r="4"/>
+                        <!-- Tail Feathers -->
+                        <path fill="#C8A2C8" d="M70,168 C60,180 65,190 75,195 C85,200 85,180 80,170z"/>
+                        <path fill="#9370DB" d="M80,169 C70,181 75,191 85,196 C95,201 95,181 90,171z"/>
+                    </g>
+                </svg>
+            </div>
+            <button id="start-btn" class="w-full md:w-auto px-12 py-4 bg-[#F09738] text-gray-900 font-bold text-xl rounded-xl shadow-md hover:bg-[#d8842c] transform hover:scale-105 transition-all duration-300 animate-pulse-btn">
+                Let's Go!
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4 bg-[#532093]/80 p-3 rounded-xl shadow-md">
+                <div class="text-lg font-bold text-[#F09738]">Score: <span id="score">0</span></div>
+                <div class="text-lg font-bold text-gray-200">Question <span id="question-counter">1</span>/<span id="total-questions"></span></div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-[#361169] rounded-full h-4 mb-6 shadow-inner">
+                <div id="progress-bar" class="bg-[#F09738] h-4 rounded-full progress-bar-inner" style="width: 0%"></div>
+            </div>
+            
+            <div class="bg-[#532093]/80 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-lg">
+                <!-- Question and Mascot -->
+                <div class="flex items-start space-x-4 mb-6">
+                    <div class="flex-shrink-0">
+                         <svg id="game-mascot" class="w-20 h-20" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <g class="lavender-parrot">
+                               <!-- Main Body -->
+                                <path fill="#C8A2C8" d="M100,170 C40,170 40,100 70,60 C80,40 100,20 120,30 C140,40 130,70 140,80 C160,100 160,170 100,170 Z"/>
+                                <!-- Wing -->
+                                <path fill="#9370DB" d="M115,90 C100,100 100,130 120,140 C140,150 150,120 140,100 C135,90 125,85 115,90 Z"/>
+                                <!-- Beak -->
+                                <path fill="#F09738" d="M118,30 C125,25 135,30 130,40 C125,45 120,35 118,30 Z"/>
+                                <!-- Eye -->
+                                <circle fill="white" cx="115" cy="55" r="8"/>
+                                <circle fill="black" cx="117" cy="55" r="4"/>
+                                <!-- Tail Feathers -->
+                                <path fill="#C8A2C8" d="M70,168 C60,180 65,190 75,195 C85,200 85,180 80,170z"/>
+                                <path fill="#9370DB" d="M80,169 C70,181 75,191 85,196 C95,201 95,181 90,171z"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="bg-[#361169] p-4 rounded-xl relative w-full">
+                        <p id="question-text" class="text-lg font-semibold text-white"></p>
+                        <!-- Speech bubble tail -->
+                        <div class="absolute -left-3 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-[#361169]"></div>
+                    </div>
+                </div>
+
+                <!-- Scenario Illustration -->
+                <div id="scenario-container" class="w-full h-48 bg-[#361169]/50 rounded-lg flex items-center justify-center mb-6 p-4">
+                    <!-- SVG will be injected here -->
+                </div>
+
+                <!-- Options -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Options will be dynamically generated here -->
+                </div>
+                
+                <!-- Feedback and Next Button Container -->
+                 <div id="feedback-container" class="mt-4 text-center hidden">
+                    <div id="feedback-box" class="p-3 rounded-lg font-semibold text-lg mb-4"></div>
+                    <button id="next-btn" class="px-8 py-2 bg-[#F09738] text-gray-900 font-bold rounded-lg shadow-md hover:bg-[#d8842c] transform hover:scale-105 transition-transform duration-300">
+                        Next &rarr;
+                    </button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="hidden text-center bg-[#532093]/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg">
+            <h2 class="text-4xl font-nunito font-extrabold text-green-400">Great Job!</h2>
+            <div id="badge-container" class="my-6">
+                <!-- Badge SVG will be here -->
+            </div>
+            <p class="text-xl text-gray-200 font-semibold">You're a Civic Champion!</p>
+            <p class="text-2xl font-bold my-4">Final Score: <span id="final-score" class="text-[#F09738]"></span></p>
+            <button id="restart-btn" class="w-full md:w-auto px-12 py-4 bg-[#F09738] text-gray-900 font-bold text-xl rounded-xl shadow-md hover:bg-[#d8842c] transform hover:scale-105 transition-transform duration-300">
+                Play Again
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        const scoreEl = document.getElementById('score');
+        const questionCounterEl = document.getElementById('question-counter');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const questionTextEl = document.getElementById('question-text');
+        const scenarioContainer = document.getElementById('scenario-container');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackBox = document.getElementById('feedback-box');
+        const gameMascot = document.getElementById('game-mascot');
+
+        const finalScoreEl = document.getElementById('final-score');
+        const badgeContainer = document.getElementById('badge-container');
+
+        // Game Data - Question Pool
+        const questions = [
+            // Existing Questions
+            {
+                question: "You see a plastic wrapper on the park grass. What's the super citizen thing to do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#86efac" d="M15 11V7a2 2 0 00-2-2h-2a2 2 0 00-2 2v4"/><path stroke="#fde047" stroke-linecap="round" stroke-linejoin="round" d="M12 11v10m-4-6l-2 6h12l-2-6"/><path stroke="#f87171" stroke-linecap="round" d="M10 5l-1-2h6l-1 2"/></g></svg>`,
+                options: [
+                    { text: "Pick it up and put it in a bin", correct: true },
+                    { text: "Leave it for someone else", correct: false, feedback: "Leaving trash for others makes the park messy for everyone." },
+                    { text: "Kick it under a bush", correct: false, feedback: "Hiding trash doesn't make it go away and can harm little animals." },
+                ],
+                feedback: "Correct! Keeping our parks clean is everyone's job."
+            },
+            {
+                question: "It's your turn for the slide, but a smaller kid is scared. What do you do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#f87171" d="M5 21V11.5a2.5 2.5 0 015 0V21"/><path stroke="#fde047" d="M14 21V6.5a2.5 2.5 0 015 0V9"/><path stroke="#60a5fa" stroke-linecap="round" d="M5 14h14M5 9l5 5m4-10l5 5"/></g></svg>`,
+                options: [
+                    { text: "Tell them to hurry up", correct: false, feedback: "Being patient is important. Hurrying someone might make them more scared." },
+                    { text: "Gently encourage them or let them go first", correct: true },
+                    { text: "Push past them", correct: false, feedback: "Pushing is not kind and someone could get hurt. We should always wait our turn." },
+                ],
+                feedback: "That's very kind! Helping others is a great quality."
+            },
+            {
+                question: "You're in a library and want to tell your friend something exciting. You should...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M4 22h16"/><path d="M6 18V2h12v16H6z"/><path d="M10 6h4M10 10h4M10 14h4"/></g><text x="12" y="16" font-family="Arial" font-size="6" fill="white" text-anchor="middle">SHHH!</text></svg>`,
+                options: [
+                    { text: "Shout it across the room", correct: false, feedback: "Shouting is loud and can disturb others who are reading or studying." },
+                    { text: "Walk over and whisper", correct: true },
+                    { text: "Send them a paper airplane note", correct: false, feedback: "While fun, that could distract others. It's best to be quiet and respectful." },
+                ],
+                feedback: "Exactly! Libraries are quiet places for everyone to enjoy."
+            },
+             {
+                question: "An elderly person gets on the bus and there are no seats. What is the right thing to do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="white" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 18h14v-8c0-2.21-1.79-4-4-4H9c-2.21 0-4 1.79-4 4v8zM3 18v2h18v-2"/><circle cx="7" cy="22" r="2"/><circle cx="17" cy="22" r="2"/><path stroke-linecap="round" d="M9 6V4h6v2M7 10h10"/></g></svg>`,
+                options: [
+                    { text: "Pretend to be asleep", correct: false, feedback: "It's always better to be helpful and aware of others who might need help." },
+                    { text: "Offer them your seat", correct: true },
+                    { text: "Look out the window and ignore them", correct: false, feedback: "Ignoring someone in need isn't kind. A small act of kindness makes a big difference." },
+                ],
+                feedback: "Wonderful! Showing respect and kindness to elders is very important."
+            },
+            {
+                question: "You see someone has drawn on the wall of a public monument. What should you think?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#a3a3a3" d="M12 2L4 7v2h16V7L12 2zM5 10v10h14V10"/><path stroke="#f87171" stroke-linecap="round" stroke-linejoin="round" d="M4 22h16m-4-8l-3 4-3-4-3 4-3-4"/><circle cx="12" cy="15" r="7" stroke="#ef4444" stroke-width="2"/><path d="m8 19l8-8" stroke="#ef4444" stroke-width="2"/></g></svg>`,
+                options: [
+                    { text: "That looks cool, I should add my name!", correct: false, feedback: "Adding more graffiti only makes it worse. We should protect our shared spaces." },
+                    { text: "We should respect public property and keep it clean", correct: true },
+                    { text: "It's not my problem", correct: false, feedback: "Public property belongs to everyone, including you! We all share the responsibility to care for it." },
+                ],
+                feedback: "You got it! Public places belong to all of us, so we should care for them."
+            },
+            // New Questions
+            {
+                question: "You're waiting to buy ice cream and the line is long. What should you do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path fill="#f472b6" d="M12 2C9 2 9 6 12 6s3-4 0-4z"/><path fill="#fde047" d="M12 6L8 20h8L12 6z"/></g></svg>`,
+                options: [
+                    { text: "Wait patiently for your turn", correct: true },
+                    { text: "Try to squeeze in at the front", correct: false, feedback: "Cutting in line isn't fair to people who were waiting before you." },
+                    { text: "Complain loudly about the wait", correct: false, feedback: "Complaining doesn't make the line move faster and can bother others." },
+                ],
+                feedback: "Great job! Waiting your turn is fair to everyone."
+            },
+            {
+                question: "You see beautiful flowers in a public garden. You should...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path fill="#f472b6" d="M12 5a4 4 0 110 8 4 4 0 010-8z"/><path stroke="#86efac" stroke-linecap="round" d="M12 13v9m-4-3h8"/></g></svg>`,
+                options: [
+                    { text: "Leave them for everyone to enjoy", correct: true },
+                    { text: "Pick one to take home", correct: false, feedback: "If everyone picked a flower, there would be none left for others to see." },
+                    { text: "Stomp on them", correct: false, feedback: "Destroying public property is never okay." },
+                ],
+                feedback: "That's right! We should leave flowers so everyone can see their beauty."
+            },
+            {
+                question: "After eating a snack on the bus, what do you do with the wrapper?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="white" stroke-width="1.5"><path fill="#fde047" d="M6 3h12l-2 18H8L6 3z"/><path fill="#fb923c" d="M10 5l-1 14h6l-1-14z"/></g></svg>`,
+                options: [
+                    { text: "Hold it until you find a bin", correct: true },
+                    { text: "Tuck it in the side of the seat", correct: false, feedback: "Leaving trash on the bus makes it dirty for others." },
+                    { text: "Throw it on the floor", correct: false, feedback: "Littering is unhygienic and disrespectful." },
+                ],
+                feedback: "Excellent! Keeping the bus clean makes the ride nice for all passengers."
+            },
+            {
+                question: "If you need to ask a stranger for directions, how should you start?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="2"><path stroke="#a78bfa" stroke-linecap="round" d="M12 21a9 9 0 000-18 9 9 0 000 18z"/><path stroke="white" d="M12 14v-1.17c0-.98.63-1.85 1.5-2.24l.87-.39c.82-.37 1.13-1.34.62-2.07-.5-.73-1.55-.8-2.15-.17l-.85.85"/><path stroke="white" d="M12 18h.01"/></g></svg>`,
+                options: [
+                    { text: "'Excuse me, can you please help me?'", correct: true },
+                    { text: "'Hey you, tell me where to go.'", correct: false, feedback: "Being rude is not a good way to get help from someone." },
+                    { text: "Just tap them and point", correct: false, feedback: "Using words is clearer and more polite than just pointing." },
+                ],
+                feedback: "Perfect! Being polite is the best way to ask for help."
+            },
+            {
+                question: "You see a tap dripping in the school bathroom. What do you do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#a3a3a3" stroke-linecap="round" d="M12 3v6M9 4h6"/><path stroke="#60a5fa" d="M12 15a3 3 0 01-6 0c0-2 3-4 3-4s3 2 3 4zm-1 5a1 1 0 01-2 0c0-1 1-2 1-2s1 1 1 2z"/></g></svg>`,
+                options: [
+                    { text: "Try to turn it off tightly, or tell a teacher", correct: true },
+                    { text: "Ignore it, it's just a little water", correct: false, feedback: "Every drop counts! We shouldn't waste water." },
+                    { text: "Splash the water and play with it", correct: false, feedback: "Wasting water is not good, and it can make the floor slippery." },
+                ],
+                feedback: "Great thinking! Saving water is very important for our planet."
+            },
+            {
+                question: "You need to cross the street. The safest place to do it is...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="#86efac"><circle cx="12" cy="12" r="10"/><path d="M12.5 6a1.5 1.5 0 00-3 0v4.38l-1.12-1.7a1.5 1.5 0 00-2.53 1.64l2.5 4a1.5 1.5 0 002.3 0l2.5-4a1.5 1.5 0 00-2.53-1.64L12.5 10.38V6z"/></g></svg>`,
+                options: [
+                    { text: "At the black and white zebra crossing", correct: true },
+                    { text: "In the middle of the road, between cars", correct: false, feedback: "Crossing between cars is very dangerous as drivers might not see you." },
+                    { text: "Wherever you want", correct: false, feedback: "Always look for a safe spot like a crossing to avoid accidents." },
+                ],
+                feedback: "You're a safety star! Zebra crossings are made for pedestrians."
+            },
+            {
+                question: "You see another kid fall down on the playground. You should...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="#f87171" stroke-width="1.5"><path d="M12 21a9 9 0 110-18 9 9 0 010 18z"/><path stroke-linecap="round" d="M8 12h8m-4-4v8"/></g></svg>`,
+                options: [
+                    { text: "Ask if they are okay and offer to help", correct: true },
+                    { text: "Laugh at them", correct: false, feedback: "Laughing at someone who is hurt is unkind." },
+                    { text: "Just walk away", correct: false, feedback: "Ignoring someone who might be hurt is not a helpful thing to do." },
+                ],
+                feedback: "That's so kind! A true super citizen helps others in need."
+            },
+            {
+                question: "Another child wants to play with the swing you're on. You've been on it for a long time. What do you do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#ca8a04" stroke-linecap="round" d="M4 21h16m-2-12l-6-6-6 6"/><path stroke="#fbbf24" stroke-linecap="round" d="M12 3v14m-4 0a4 4 0 008 0H8z"/></g></svg>`,
+                options: [
+                    { text: "Offer them a turn after a few more minutes", correct: true },
+                    { text: "Say 'No, it's mine!' and stay on", correct: false, feedback: "Public playground equipment is for everyone to share." },
+                    { text: "Get off and run away", correct: false, feedback: "Running away isn't fair to the other child who wants to play." },
+                ],
+                feedback: "Fantastic! Sharing makes playtime fun for everyone."
+            },
+            {
+                question: "You're walking your dog and it poops on the sidewalk. What's your responsibility?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="#a16207" stroke-width="1.5"><path d="M15.5 12a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-4 0-5-2-5-2s1-4 5-4 5 4 5 4-1 2-5 2zm-5-9c0-3 2-4 2-4s2-1 4-1 4 1 4 1 2 1 2 4"/></g></svg>`,
+                options: [
+                    { text: "Use a bag to pick it up and put it in a bin", correct: true },
+                    { text: "Leave it there", correct: false, feedback: "Leaving pet waste makes the sidewalk dirty and smelly for everyone." },
+                    { text: "Blame another dog", correct: false, feedback: "It's important to be honest and responsible for your pet." },
+                ],
+                feedback: "You got it! Responsible pet owners clean up after their pets."
+            },
+            {
+                question: "You are visiting someone in a hospital. How should you behave?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#f87171" d="M4 8h16v12H4z"/><path stroke="#fb7185" stroke-linecap="round" d="M10 4h4v4h-4z"/><path stroke="white" stroke-linecap="round" d="M12 11v6m-3-3h6"/></g></svg>`,
+                options: [
+                    { text: "Speak softly and walk quietly", correct: true },
+                    { text: "Run around in the hallways", correct: false, feedback: "Running can be dangerous and noisy in a hospital." },
+                    { text: "Shout to your friends down the hall", correct: false, feedback: "Loud noises can disturb patients who are trying to get well." },
+                ],
+                feedback: "Exactly! Hospitals are places for rest and healing, so we must be quiet."
+            },
+            {
+                question: "You feel like carving your initials into a park bench. You should...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="#ca8a04" stroke-width="1.5" stroke-linecap="round"><path d="M4 14h16v-2H4v2zm1-5h14v-2H5v2zM5 18h14v-2H5v2z"/><path d="M6 18V6m12 12V6"/></g></svg>`,
+                options: [
+                    { text: "Decide not to, to keep the bench nice for all", correct: true },
+                    { text: "Go ahead, it's just a small scratch", correct: false, feedback: "Even small damage can ruin things for others." },
+                    { text: "Use a big rock to do it", correct: false, feedback: "Damaging property on purpose is wrong and is called vandalism." },
+                ],
+                feedback: "Wise choice! We should respect public property."
+            },
+            {
+                question: "You find a wallet on the ground in a shop. What do you do?",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#a16207" d="M2 7h20v12H2z"/><path fill="#fde047" stroke="#fbbf24" d="M12 11l-3 3h6l-3-3z"/><path stroke="white" d="M2 9h20"/></g></svg>`,
+                options: [
+                    { text: "Give it to a shop employee or a grown-up", correct: true },
+                    { text: "Take the money and leave the wallet", correct: false, feedback: "Taking something that isn't yours is stealing." },
+                    { text: "Keep it, finders keepers!", correct: false, feedback: "The right thing to do is to try and return it to its owner." },
+                ],
+                feedback: "That's a very honest thing to do! Someone will be very happy to get it back."
+            },
+            {
+                question: "You feel a big sneeze coming! You should...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2m8-10h-2m-14 0H2m15.5-5.5l-1.4 1.4M6.9 17.1l-1.4 1.4m10.6-10.6l-1.4-1.4M6.9 6.9l-1.4-1.4"/></g></svg>`,
+                options: [
+                    { text: "Sneeze into your elbow or a tissue", correct: true },
+                    { text: "Sneeze into the open air", correct: false, feedback: "Sneezing into the air spreads germs to other people." },
+                    { text: "Sneeze on your friend as a joke", correct: false, feedback: "That's not funny and spreads germs, which can make people sick." },
+                ],
+                feedback: "Healthy habits! This stops germs from spreading."
+            },
+            {
+                question: "The bus driver drops you off safely at your stop. It's nice to...",
+                scenario: `<svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="none" stroke-width="1.5"><path stroke="#86efac" d="M22 12a10 10 0 11-20 0 10 10 0 0120 0z"/><path stroke="white" stroke-linecap="round" d="M12 16v-4m0-4h.01"/></g><text x="12" y="10" font-family="Arial" font-size="2" fill="white" text-anchor="middle">Thank You!</text></svg>`,
+                options: [
+                    { text: "Say 'Thank you!' as you get off", correct: true },
+                    { text: "Just get off without saying anything", correct: false, feedback: "It's always nice to show appreciation for people who help us." },
+                    { text: "Complain that the ride was bumpy", correct: false, feedback: "It's better to be grateful for the service instead of complaining." },
+                ],
+                feedback: "How thoughtful! A simple 'thank you' can brighten someone's day."
+            },
+            {
+                question: "A crossing guard is helping you cross the street. You should...",
+                scenario: `<img xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" viewBox="0 0 24 24"><g fill="#ef4444"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM6 11h12v2H6v-2z"/></g></svg>`,
+                options: [
+                    { text: "Follow their instructions carefully", correct: true },
+                    { text: "Run across before they say it's okay", correct: false, feedback: "That's very dangerous! You should always wait for their signal." },
+                    { text: "Argue with them about when to cross", correct: false, feedback: "They are trained to know when it's safe, so it's important to listen." },
+                ],
+                feedback: "Smart move! Crossing guards are there to keep you safe."
+            }
+        ];
+
+        // Game State
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentGameQuestions = [];
+
+        // Functions
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            endScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameScreen.classList.add('fade-in');
+            
+            shuffleArray(questions);
+            currentGameQuestions = questions.slice(0, 5);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreEl.textContent = score;
+            totalQuestionsEl.textContent = currentGameQuestions.length;
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            // Reset state
+            optionsContainer.innerHTML = '';
+            feedbackContainer.classList.add('hidden');
+            gameMascot.classList.remove('animate-tada', 'animate-shake');
+            
+            if (currentQuestionIndex >= currentGameQuestions.length) {
+                endGame();
+                return;
+            }
+
+            const currentQuestion = currentGameQuestions[currentQuestionIndex];
+            
+            // Update UI
+            questionTextEl.textContent = currentQuestion.question;
+            scenarioContainer.innerHTML = currentQuestion.scenario;
+            questionCounterEl.textContent = currentQuestionIndex + 1;
+            
+            const progressPercentage = ((currentQuestionIndex) / currentGameQuestions.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            // Create option buttons
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.classList.add('w-full', 'p-4', 'bg-[#532093]', 'text-white', 'font-semibold', 'rounded-lg', 'shadow', 'hover:bg-[#6b30b8]', 'transform', 'hover:scale-105', 'transition-all', 'duration-200', 'text-left');
+                button.onclick = () => selectAnswer(option, button, currentQuestion.feedback);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, button, correctFeedback) {
+            // Disable all buttons
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-[#6b30b8]');
+            });
+            
+            let feedbackToShow;
+
+            if (selectedOption.correct) {
+                score += 10;
+                scoreEl.textContent = score;
+                button.classList.remove('bg-[#532093]');
+                button.classList.add('bg-green-500', 'text-white');
+                feedbackBox.classList.add('text-green-400');
+                feedbackBox.classList.remove('text-red-400');
+                gameMascot.classList.add('animate-tada');
+                feedbackToShow = correctFeedback;
+            } else {
+                button.classList.remove('bg-[#532093]');
+                button.classList.add('bg-red-500', 'text-white');
+                feedbackBox.classList.add('text-red-400');
+                feedbackBox.classList.remove('text-green-400');
+                gameMascot.classList.add('animate-shake');
+                feedbackToShow = selectedOption.feedback;
+            }
+            
+            feedbackBox.textContent = feedbackToShow;
+            feedbackContainer.classList.remove('hidden');
+            feedbackContainer.classList.add('bounce-in');
+        }
+
+        function endGame() {
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+            endScreen.classList.add('bounce-in');
+            
+            finalScoreEl.textContent = score;
+            progressBar.style.width = '100%';
+            
+            const totalPossibleScore = currentGameQuestions.length * 10;
+            let badgeSVG = '';
+            let badgeText = '';
+            let headingText = 'Great Job!';
+            let headingColor = 'text-green-400';
+
+            if (score >= totalPossibleScore * 0.8) { // 80% or more
+                badgeSVG = `<svg class="w-32 h-32 mx-auto" viewBox="0 0 24 24"><path fill="#F09738" d="M12 2l2.5 7.5h8l-6 5l2 8l-6.5-5l-6.5 5l2-8l-6-5h8z"/></svg>`;
+                badgeText = "You're a Golden Star Citizen!";
+            } else if (score >= totalPossibleScore * 0.5) { // Between 50% and 79%
+                badgeSVG = `<svg class="w-32 h-32 mx-auto" viewBox="0 0 24 24"><path fill="#C0C0C0" d="M12 2l2.5 7.5h8l-6 5l2 8l-6.5-5l-6.5 5l2-8l-6-5h8z"/></svg>`;
+                badgeText = "Great effort! You're a Silver Star Citizen!";
+            } else { // Less than 50%
+                badgeSVG = `<svg class="w-32 h-32 mx-auto" viewBox="0 0 24 24"><path fill="#CD7F32" d="M12,17.27L18.18,21L17,14.64L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7,14.64L5.82,21L12,17.27Z" /></svg>`; // Bronze star
+                badgeText = "You need to work better to become a Super Citizen!";
+                headingText = 'Keep Practicing!';
+                headingColor = 'text-yellow-400';
+            }
+            
+            const headingEl = endScreen.querySelector('h2');
+            headingEl.textContent = headingText;
+            headingEl.className = `text-4xl font-nunito font-extrabold ${headingColor}`;
+            badgeContainer.innerHTML = badgeSVG;
+            endScreen.querySelector('p.text-xl').textContent = badgeText;
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            showQuestion();
+        });
+
+    </script>
+</body>
+</html>
+
+
+

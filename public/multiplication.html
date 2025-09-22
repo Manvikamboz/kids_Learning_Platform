@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multiplication Match! ✨</title>
+  <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0d0a1f;
+      --star-color: #ffffff;
+      --container-bg: rgba(26, 22, 53, 0.7);
+      --container-border: #6c5ce7;
+      --title-color: #f2eefa;
+      --text-glow: #a29bfe;
+      --score-color: #d1cce8;
+      
+      --problem-bg: #2a2252;
+      --problem-border: #a29bfe;
+      --problem-color: #f2eefa;
+      --problem-glow: #d63031;
+
+      --answer-bg: #2a2252;
+      --answer-border: #a29bfe;
+      --answer-color: #f2eefa;
+      --answer-glow: #00cec9;
+
+      --solved-bg: #1e4b4a;
+      --solved-border: #55efc4;
+      --solved-glow: #55efc4;
+      
+      --button-bg: #fd79a8;
+      --button-shadow: #e84393;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Titillium Web', sans-serif;
+      background-color: var(--bg-color);
+      color: #fff;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Changed to allow scrolling */
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="font-size: 24px;"><text y="24">🪄</text></svg>'), auto;
+    }
+
+    #star-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+
+    .star {
+        position: absolute;
+        background: var(--star-color);
+        border-radius: 50%;
+        animation: twinkle 5s infinite;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.5; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+
+    .game-container {
+      background: var(--container-bg);
+      border: 2px solid var(--container-border);
+      padding: 30px 40px;
+      border-radius: 30px;
+      box-shadow: 0 0 15px var(--container-border), 0 0 30px var(--container-border);
+      text-align: center;
+      width: 900px;
+      max-width: 95vw;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-family: 'Boogaloo', cursive;
+      color: var(--title-color);
+      font-size: clamp(2.5em, 6vw, 3.5em);
+      margin: 0 0 15px 0;
+      text-shadow: 0 0 5px var(--text-glow), 0 0 10px var(--text-glow);
+    }
+
+    .score {
+      font-size: 1.8em;
+      margin-bottom: 25px;
+      color: var(--score-color);
+      font-weight: 600;
+    }
+
+    .game-board {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .problems, .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 45%;
+    }
+
+    .card {
+      font-family: 'Boogaloo', cursive;
+      padding: 20px;
+      border: 3px solid var(--problem-border);
+      color: var(--problem-color);
+      background-color: var(--problem-bg);
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: clamp(1.5em, 4vw, 2em);
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 0 5px var(--problem-border);
+      position: relative;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0; /* Initially hidden for entry animation */
+      transform: translateY(20px);
+      animation: card-enter 0.5s forwards ease-out;
+    }
+
+    @keyframes card-enter {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .problem-card:hover {
+        transform: scale(1.05);
+        border-color: var(--problem-glow);
+        box-shadow: 0 0 15px var(--problem-glow);
+    }
+
+    .answer-card:hover {
+        transform: scale(1.05);
+        border-color: var(--answer-glow);
+        box-shadow: 0 0 15px var(--answer-glow);
+    }
+
+    .problem-card.selected {
+        transform: scale(1.1);
+        border-color: var(--problem-glow);
+        box-shadow: 0 0 20px var(--problem-glow);
+    }
+
+    .answer-card.selected {
+        transform: scale(1.1);
+        border-color: var(--answer-glow);
+        box-shadow: 0 0 20px var(--answer-glow);
+    }
+    
+    .solved {
+        pointer-events: none;
+        background: var(--solved-bg);
+        border-color: var(--solved-border);
+        box-shadow: 0 0 20px var(--solved-glow);
+        animation: pop 0.4s ease-out;
+    }
+    
+    @keyframes pop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+        100% { transform: scale(1.05); }
+    }
+
+    .shake {
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px) rotate(-3deg); }
+      75% { transform: translateX(10px) rotate(3deg); }
+    }
+    
+    .hidden { display: none; }
+    
+    #next-round {
+        padding: 15px 30px;
+        font-size: 1.8em;
+        font-family: 'Boogaloo', cursive;
+        color: #fff;
+        background: var(--button-bg);
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        margin-top: 30px;
+        box-shadow: 0 5px 0 var(--button-shadow);
+        transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    }
+    
+    #next-round:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--button-shadow); }
+    #next-round:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--button-shadow); }
+
+    .connection-line {
+        position: absolute;
+        height: 4px;
+        background: linear-gradient(90deg, var(--problem-glow), var(--answer-glow));
+        box-shadow: 0 0 10px #fff;
+        border-radius: 2px;
+        transform-origin: 0 50%;
+        z-index: 10;
+        opacity: 0;
+        animation: draw-line 0.3s forwards ease-out;
+    }
+
+    @keyframes draw-line {
+        to { opacity: 1; }
+    }
+
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background-color: #f00;
+        opacity: 0;
+        animation: confetti-fall 3s ease-out forwards;
+        z-index: 1000;
+    }
+    @keyframes confetti-fall {
+        0% { transform: translateY(-10vh) rotateZ(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotateZ(720deg); opacity: 0; }
+    }
+    
+    @media (max-width: 768px) {
+        body { padding: 20px 10px; }
+        .game-board { flex-direction: column; gap: 20px; }
+        .problems, .answers { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="star-background"></div>
+
+  <div class="game-container">
+    <h1>Cosmic Math Match! ✨</h1>
+    <div class="score">Score: <span id="score">0</span> | Level: <span id="level">1</span></div>
+    <div class="game-board">
+      <div class="problems" id="problems-container"></div>
+      <div class="answers" id="answers-container"></div>
+    </div>
+    <button id="next-round" class="hidden" onclick="startGame()">Next Round</button>
+  </div>
+
+  <script>
+    const problemsContainer = document.getElementById('problems-container');
+    const answersContainer = document.getElementById('answers-container');
+    const scoreDisplay = document.getElementById('score');
+    const levelDisplay = document.getElementById('level');
+    const nextRoundButton = document.getElementById('next-round');
+    
+    let score = 0, level = 1, matchesMade = 0;
+    let selectedProblem = null, selectedAnswer = null;
+
+    // --- DECORATION & ANIMATION FUNCTIONS ---
+
+    function createStars() {
+        const starBackground = document.getElementById('star-background');
+        starBackground.innerHTML = '';
+        const starCount = 100;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            starBackground.appendChild(star);
+        }
+    }
+
+    function showConfetti() {
+        const colors = ['#fd79a8', '#55efc4', '#81ecec', '#74b9ff', '#a29bfe', '#ffeaa7'];
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = `${Math.random() * 100}vw`;
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+            confetti.style.transform = `rotateZ(${Math.random() * 360}deg)`;
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+        }
+    }
+
+    function drawConnectionLine(el1, el2) {
+        const rect1 = el1.getBoundingClientRect();
+        const rect2 = el2.getBoundingClientRect();
+        const x1 = rect1.left + rect1.width / 2 + window.scrollX;
+        const y1 = rect1.top + rect1.height / 2 + window.scrollY;
+        const x2 = rect2.left + rect2.width / 2 + window.scrollX;
+        const y2 = rect2.top + rect2.height / 2 + window.scrollY;
+
+        const distance = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+        const line = document.createElement('div');
+        line.className = 'connection-line';
+        line.style.left = `${x1}px`;
+        line.style.top = `${y1}px`;
+        line.style.width = `${distance}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+        document.body.appendChild(line);
+
+        setTimeout(() => line.remove(), 500);
+    }
+    
+
+    // --- GAME LOGIC FUNCTIONS ---
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createGameRound() {
+      problemsContainer.innerHTML = '';
+      answersContainer.innerHTML = '';
+      matchesMade = 0;
+      selectedProblem = null;
+      selectedAnswer = null;
+      nextRoundButton.classList.add('hidden');
+      levelDisplay.textContent = level;
+
+      const problems = [], answers = new Set();
+      const maxNumber = 10 + level;
+      let cardIndex = 0;
+
+      while (problems.length < 4) {
+        const num1 = Math.floor(Math.random() * maxNumber) + 2; 
+        const num2 = Math.floor(Math.random() * 10) + 2;
+        const result = num1 * num2;
+        if (!answers.has(result)) {
+            problems.push({ problem: `${num1} × ${num2}`, answer: result });
+            answers.add(result);
+        }
+      }
+
+      const shuffledAnswers = Array.from(answers);
+      shuffleArray(shuffledAnswers);
+
+      problems.forEach(p => {
+        const problemDiv = document.createElement('div');
+        problemDiv.classList.add('card', 'problem-card');
+        problemDiv.innerHTML = p.problem.replace('×', ' <span style="font-family: sans-serif;">×</span> ');
+        problemDiv.dataset.answer = p.answer;
+        problemDiv.style.animationDelay = `${cardIndex++ * 100}ms`;
+        problemDiv.addEventListener('click', () => handleProblemClick(problemDiv));
+        problemsContainer.appendChild(problemDiv);
+      });
+
+      shuffledAnswers.forEach(a => {
+        const answerDiv = document.createElement('div');
+        answerDiv.classList.add('card', 'answer-card');
+        answerDiv.textContent = a;
+        answerDiv.dataset.value = a;
+        answerDiv.style.animationDelay = `${cardIndex++ * 100}ms`;
+        answerDiv.addEventListener('click', () => handleAnswerClick(answerDiv));
+        answersContainer.appendChild(answerDiv);
+      });
+    }
+
+    function handleProblemClick(card) {
+      if (card.classList.contains('solved') || selectedProblem === card) return;
+      if (selectedProblem) selectedProblem.classList.remove('selected');
+      selectedProblem = card;
+      selectedProblem.classList.add('selected');
+      if (selectedAnswer) checkMatch();
+    }
+
+    function handleAnswerClick(card) {
+      if (card.classList.contains('solved') || selectedAnswer === card) return;
+      if (selectedAnswer) selectedAnswer.classList.remove('selected');
+      selectedAnswer = card;
+      selectedAnswer.classList.add('selected');
+      if (selectedProblem) checkMatch();
+    }
+    
+    function checkMatch() {
+      const isCorrect = selectedProblem.dataset.answer === selectedAnswer.dataset.value;
+      
+      if (isCorrect) {
+        // Correct Match
+        score += 10;
+        matchesMade++;
+        scoreDisplay.textContent = score;
+        
+        drawConnectionLine(selectedProblem, selectedAnswer);
+
+        const problemToSolve = selectedProblem;
+        const answerToSolve = selectedAnswer;
+
+        // Reset selections immediately
+        selectedProblem = null;
+        selectedAnswer = null;
+
+        setTimeout(() => {
+            problemToSolve.classList.add('solved');
+            answerToSolve.classList.add('solved');
+            problemToSolve.classList.remove('selected');
+            answerToSolve.classList.remove('selected');
+        }, 300);
+        
+        if (matchesMade === 4) {
+          level++;
+          showConfetti();
+          setTimeout(() => nextRoundButton.classList.remove('hidden'), 1000);
+        }
+      } else {
+        // Incorrect Match
+        selectedProblem.classList.add('shake');
+        selectedAnswer.classList.add('shake');
+        
+        const problemToClear = selectedProblem;
+        const answerToClear = selectedAnswer;
+        
+        selectedProblem = null;
+        selectedAnswer = null;
+
+        setTimeout(() => {
+          problemToClear.classList.remove('shake', 'selected');
+          answerToClear.classList.remove('shake', 'selected');
+        }, 400);
+      }
+    }
+    
+    function startGame() {
+        createGameRound();
+    }
+
+    // Initial game start
+    createStars();
+    startGame();
+  </script>
+</body>
+</html>

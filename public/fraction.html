@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yummy Fractions Cake Game! 🍰</title>
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Handlee&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Handlee', cursive;
+      background: linear-gradient(to bottom right, #ffecb3, #ffcc80);
+      text-align: center;
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #7a3d00;
+    }
+
+    h1 {
+      font-family: 'Boogaloo', cursive;
+      color: #d84315;
+      font-size: 2.8em;
+      text-shadow: 3px 3px #ffab40;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: #6d4c41;
+    }
+
+    #game-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-evenly;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 25px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      padding: 15px;
+      width: 90%;
+      max-width: 700px;
+    }
+
+    .cake-display-wrapper {
+      width: 200px;
+      height: 200px;
+      background-color: #ffe0b2;
+      border-radius: 50%;
+      border: 6px solid #fbc02d;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .cake-display-wrapper svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .cake-slice-svg {
+      fill: #ff8a65;
+      stroke: #d84315;
+      stroke-width: 1.5;
+      animation: slicePop 0.6s ease-out;
+    }
+    .cake-slice-svg.missing {
+      fill: #fff3e0;
+      stroke-dasharray: 4 3;
+    }
+
+    @keyframes slicePop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .fraction-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 350px;
+    }
+    .fraction-button {
+      padding: 10px;
+      font-size: 1.5em;
+      font-family: 'Boogaloo', cursive;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .fraction-button:nth-child(1){ background:#4CAF50; }
+    .fraction-button:nth-child(2){ background:#2196F3; }
+    .fraction-button:nth-child(3){ background:#FFC107; color:#333; }
+    .fraction-button:nth-child(4){ background:#9C27B0; }
+
+    .fraction-button:hover {
+      transform: scale(1.1);
+    }
+
+    #feedback {
+      font-size: 1.5em;
+      min-height: 30px;
+      font-weight: bold;
+    }
+
+    #score {
+      font-size: 1.2em;
+      margin-top: 5px;
+    }
+
+    #next-button {
+      padding: 10px 20px;
+      font-size: 1.2em;
+      background: #FF5722;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: gold;
+      animation: fall 2s linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🍰 Yummy Fractions!</h1>
+  <p class="subtitle">Pick the right fraction of the cake</p>
+
+  <div id="game-container">
+    <div class="cake-display-wrapper">
+      <svg id="cake-display" viewBox="0 0 100 100"></svg>
+    </div>
+    <div id="fraction-options" class="fraction-options"></div>
+    <div id="feedback"></div>
+    <div id="score">Score: 0</div>
+    <button id="next-button" onclick="nextQuestion()">Next Cake!</button>
+  </div>
+
+  <script>
+    const cakeDisplay = document.getElementById('cake-display');
+    const fractionOptions = document.getElementById('fraction-options');
+    const feedback = document.getElementById('feedback');
+    const scoreDisplay = document.getElementById('score');
+    const nextButton = document.getElementById('next-button');
+
+    let correctFraction;
+    let score = 0;
+
+    function getPoints(cx, cy, r, angle){
+      const rad = angle * Math.PI / 180;
+      return {x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad)};
+    }
+
+    function createCake(d, n){
+      cakeDisplay.innerHTML = "";
+      const cx=50, cy=50, r=50;
+      const slice = 360/d;
+      for(let i=0;i<d;i++){
+        const start=i*slice, end=start+slice;
+        const s=getPoints(cx,cy,r,start);
+        const e=getPoints(cx,cy,r,end);
+        const arc= slice>180?1:0;
+        const path=`M${cx},${cy} L${s.x},${s.y} A${r},${r} 0 ${arc} 1 ${e.x},${e.y} Z`;
+        const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+        p.setAttribute("d",path);
+        p.classList.add("cake-slice-svg");
+        if(i>=n) p.classList.add("missing");
+        cakeDisplay.appendChild(p);
+      }
+    }
+
+    function generateQuestion(){
+      const denoms=[2,3,4,6,8];
+      const d=denoms[Math.floor(Math.random()*denoms.length)];
+      const n=Math.floor(Math.random()*(d-1))+1;
+      correctFraction=`${n}/${d}`;
+      createCake(d,n);
+
+      const opts=new Set([correctFraction]);
+      while(opts.size<4){
+        const dn=denoms[Math.floor(Math.random()*denoms.length)];
+        const nn=Math.floor(Math.random()*dn)+1;
+        opts.add(`${nn}/${dn}`);
+      }
+
+      fractionOptions.innerHTML="";
+      [...opts].sort(()=>Math.random()-0.5).forEach(opt=>{
+        const b=document.createElement("button");
+        b.className="fraction-button";
+        b.textContent=opt;
+        b.onclick=()=>checkAnswer(opt);
+        fractionOptions.appendChild(b);
+      });
+
+      feedback.textContent="";
+      nextButton.style.display="none";
+    }
+
+    function checkAnswer(ans){
+      document.querySelectorAll('.fraction-button').forEach(b=>b.disabled=true);
+      if(ans===correctFraction){
+        feedback.textContent="🎉 Correct!";
+        feedback.style.color="#2e7d32";
+        score++;
+        scoreDisplay.textContent="Score: "+score;
+        confetti();
+      } else {
+        feedback.textContent="❌ Oops! It was "+correctFraction;
+        feedback.style.color="#c62828";
+      }
+      nextButton.style.display="block";
+    }
+
+    function nextQuestion(){
+      generateQuestion();
+      document.querySelectorAll('.fraction-button').forEach(b=>b.disabled=false);
+    }
+
+    function confetti(){
+      for(let i=0;i<30;i++){
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=Math.random()*100+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+        c.style.animationDelay=Math.random()+"s";
+        document.body.appendChild(c);
+        c.addEventListener("animationend",()=>c.remove());
+      }
+    }
+
+    generateQuestion();
+  </script>
+</body>
+</html>

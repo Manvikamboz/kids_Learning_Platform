@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monument Masters 🗺️✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* General Setup */
+        :root {
+            --bg-color: #361169;
+            --text-color: #ffffff;
+            --primary-color: #F09738;
+            --secondary-color: #532093;
+            --correct-color: #4CAF50;
+            --incorrect-color: #F44336;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Fredoka', sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            text-shadow: 3px 3px 0px var(--secondary-color);
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Hidden Class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Monument Cards Grid */
+        .monuments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .monument-card {
+            background-color: var(--secondary-color);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .monument-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(240, 151, 56, 0.4);
+        }
+
+        .monument-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 3px solid var(--primary-color);
+        }
+
+        .monument-card h3 {
+            margin: 10px 0 5px;
+            color: var(--primary-color);
+        }
+
+        .fun-fact {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(240, 151, 56, 0.95);
+            color: var(--bg-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 15px;
+            margin: 0;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .monument-card:hover .fun-fact {
+            transform: translateY(0);
+        }
+
+        /* Buttons */
+        .main-btn {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .main-btn:hover {
+            transform: scale(1.1);
+            background-color: #ffae5a;
+        }
+
+        /* Quiz Section */
+        #quiz-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #quiz-image {
+            max-width: 90%;
+            width: 400px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 5px solid var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .quiz-options button {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 3px solid var(--primary-color);
+            padding: 15px;
+            font-size: 1.2rem;
+            font-family: 'Fredoka', sans-serif;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-options button:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        .quiz-options button.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .quiz-options button.incorrect {
+            background-color: var(--incorrect-color);
+            border-color: var(--incorrect-color);
+            color: white;
+            opacity: 0.7;
+        }
+
+        .quiz-footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 500px;
+            margin: 20px auto;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* End Screen */
+        #end-screen h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        #final-score {
+            font-size: 1.8rem;
+            margin: 20px 0;
+        }
+        #badge-container {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        #badge-container .badge {
+            font-size: 5rem;
+            display: block;
+            animation: bounce 1s infinite;
+        }
+
+        /* Animations */
+        #feedback-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8rem;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        #feedback-animation.animate {
+            animation: pop-out 0.8s ease-out;
+        }
+
+        @keyframes pop-out {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+          40% {transform: translateY(-30px);}
+          60% {transform: translateY(-15px);}
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Monument Masters 🗺️✨</h1>
+        </header>
+
+        <main id="main-content">
+            <p class="intro-text">Hover over a monument to learn a fun fact! When you're ready, start the quiz!</p>
+            <div class="monuments-grid" id="monuments-grid">
+                </div>
+            <button id="start-quiz-btn" class="main-btn">Start Quiz! 🚀</button>
+        </main>
+
+        <section id="quiz-section" class="hidden">
+            <h2 id="quiz-question">Which country is this monument in?</h2>
+            <img id="quiz-image" src="" alt="Monument for quiz question">
+            <div id="quiz-options" class="quiz-options">
+                </div>
+            <div class="quiz-footer">
+                <div id="score-display">Score: 0</div>
+                <div id="question-counter"></div>
+            </div>
+        </section>
+
+        <section id="end-screen" class="hidden">
+            <h2>Quiz Complete!</h2>
+            <div id="final-score"></div>
+            <div id="badge-container"></div>
+            <button id="play-again-btn" class="main-btn">Play Again 🔁</button>
+        </section>
+
+    </div>
+
+    <div id="feedback-animation"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const monumentsData = [
+                {
+                    name: "Eiffel Tower",
+                    country: "France",
+                    image: "https://hips.hearstapps.com/hmg-prod/images/paris-skyline-with-eiffel-tower-on-a-sunny-day-wide-royalty-free-image-1722542669.jpg?crop=1xw:0.84335xh;center,top&resize=1200:*",
+                    funFact: "The Eiffel Tower can be 15 cm taller during the summer, as the iron structure expands with heat! ☀️"
+                },
+                {
+                    name: "Taj Mahal",
+                    country: "India",
+                    image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fHRhaiUyMG1haGFsfGVufDB8fHx8MTY4MTM5NzQ5Mw&ixlib=rb-4.0.3&q=80&w=400",
+                    funFact: "It's a giant tomb made of white marble that seems to change color depending on the time of day. 🎨"
+                },
+                {
+                    name: "Great Wall of China",
+                    country: "China",
+                    image: "https://whc.unesco.org/uploads/thumbs/site_0438_0035-1200-630-20241024162522.jpg",
+                    funFact: "It's so long it could stretch across the entire United States! It's more like a series of walls, not one single long one. 🐉"
+                },
+                {
+                    name: "Statue of Liberty",
+                    country: "USA",
+                    image: "https://guidance.aero/wp-content/uploads/2015/06/statue-of-liberty-full-view-national-park-service-photo.jpg",
+                    funFact: "This famous green lady wasn't always green! She is made of copper, which turned green over time due to weather. 💚"
+                },
+                {
+                    name: "Pyramids of Giza",
+                    country: "Egypt",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdX6PIQLSSIOmoGJCY1-pY_dQDRb6hVm6NPQ&s",
+                    funFact: "These giant triangle tombs were built for kings, called Pharaohs, over 4,500 years ago! 👑"
+                },
+                {
+                    name: "Machu Picchu",
+                    country: "Peru",
+                    image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fG1hY2h1JTIwcGljY2h1fGVufDB8fHx8MTY4MTM5NzYxMg&ixlib=rb-4.0.3&q=80&w=400",
+                    funFact: "This 'City in the Clouds' is built so high up in the mountains that it was hidden from the world for almost 400 years! ☁️"
+                },
+                {
+                    name: "Sydney Opera House",
+                    country: "Australia",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5AGDBE4dITbImza1eqWr1A2ET_lpK-sX5ww&s",
+                    funFact: "Its cool roof design looks like giant shells or the sails of a ship. It's a place for concerts and shows! 🎶"
+                },
+                {
+                    name: "Colosseum",
+                    country: "Italy",
+                    image: "https://cdn.britannica.com/36/162636-050-932C5D49/Colosseum-Rome-Italy.jpg",
+                    funFact: "Ancient Romans watched gladiator fights here! It could hold more than 50,000 people, like a modern sports stadium. 🏟️"
+                },
+                {
+                    name: "Christ the Redeemer",
+                    country: "Brazil",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTEIu5r115mMKVyg1QIZZj2DsmhsC6R-5CNQ&s",
+                    funFact: "This giant statue of Jesus is as tall as a 13-story building and its arms stretch as wide as a soccer field! 🙏"
+                },
+                {
+                    name: "Petra",
+                    country: "Jordan",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWQblKYpDy9joi7GVzXJ4Q3aUOz8i-AXdUA&s",
+                    funFact: "Known as the 'Rose City' because it's carved into pink-colored cliffs! It was a secret city hidden in the desert. 🌹"
+                },
+                {
+                    name: "Big Ben",
+                    country: "United Kingdom",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyeL_yMfrqH6P5_786oCdYxBxAHf3peegoBQ&s",
+                    funFact: "Big Ben is actually the nickname for the giant bell inside the clock tower. The tower's real name is Elizabeth Tower! 🔔"
+                },
+                {
+                    name: "Moai Statues",
+                    country: "Chile",
+                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThk7Q3hmEVK2Oh8vBF56m2oa_YgNuLxiYPHA&s",
+                    funFact: "These mysterious giant stone heads are on Easter Island. Some of them have huge hats and are buried deep in the ground!🗿"
+                }
+            ];
+
+            // DOM Elements
+            const monumentsGrid = document.getElementById('monuments-grid');
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const mainContent = document.getElementById('main-content');
+            const quizSection = document.getElementById('quiz-section');
+            const quizQuestion = document.getElementById('quiz-question');
+            const quizImage = document.getElementById('quiz-image');
+            const quizOptions = document.getElementById('quiz-options');
+            const scoreDisplay = document.getElementById('score-display');
+            const questionCounter = document.getElementById('question-counter');
+            const feedbackAnimation = document.getElementById('feedback-animation');
+            const endScreen = document.getElementById('end-screen');
+            const finalScore = document.getElementById('final-score');
+            const badgeContainer = document.getElementById('badge-container');
+            const playAgainBtn = document.getElementById('play-again-btn');
+
+            // Quiz state variables
+            let score = 0;
+            let currentQuestionIndex = 0;
+            let quizQuestions = [];
+
+            // --- Initial Page Setup ---
+
+            function displayMonuments() {
+                monumentsGrid.innerHTML = monumentsData.map(monument => `
+                    <div class="monument-card">
+                        <img src="${monument.image}" alt="${monument.name}">
+                        <h3>${monument.name}</h3>
+                        <p class="fun-fact">${monument.funFact}</p>
+                    </div>
+                `).join('');
+            }
+
+            // --- Quiz Logic ---
+
+            function shuffleArray(array) {
+                return array.sort(() => Math.random() - 0.5);
+            }
+
+            function startQuiz() {
+                mainContent.classList.add('hidden');
+                endScreen.classList.add('hidden');
+                quizSection.classList.remove('hidden');
+
+                score = 0;
+                currentQuestionIndex = 0;
+                scoreDisplay.textContent = `Score: ${score}`;
+                quizQuestions = shuffleArray([...monumentsData]);
+                
+                showQuestion();
+            }
+
+            function showQuestion() {
+                // Clear previous options
+                quizOptions.innerHTML = '';
+                
+                if (currentQuestionIndex >= quizQuestions.length) {
+                    showEndScreen();
+                    return;
+                }
+
+                const question = quizQuestions[currentQuestionIndex];
+                questionCounter.textContent = `Question: ${currentQuestionIndex + 1} / ${quizQuestions.length}`;
+                quizQuestion.textContent = `Where is the ${question.name}?`;
+                quizImage.src = question.image;
+
+                // Generate options
+                const correctAnswer = question.country;
+                const wrongAnswers = monumentsData
+                    .filter(m => m.country !== correctAnswer)
+                    .map(m => m.country);
+                
+                const shuffledWrongAnswers = shuffleArray(wrongAnswers).slice(0, 3);
+                const options = shuffleArray([correctAnswer, ...shuffledWrongAnswers]);
+                
+                options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.onclick = () => checkAnswer(option, correctAnswer, button);
+                    quizOptions.appendChild(button);
+                });
+            }
+
+            function checkAnswer(selectedAnswer, correctAnswer, button) {
+                const buttons = quizOptions.querySelectorAll('button');
+                buttons.forEach(btn => btn.disabled = true); // Disable all buttons
+
+                if (selectedAnswer === correctAnswer) {
+                    score++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    button.classList.add('correct');
+                    playFeedbackAnimation('✨'); // Sparkle for correct
+                } else {
+                    button.classList.add('incorrect');
+                    playFeedbackAnimation('❌'); // Cross for incorrect
+                    // Highlight the correct answer
+                    buttons.forEach(btn => {
+                        if (btn.textContent === correctAnswer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    showQuestion();
+                }, 1500); // Wait 1.5 seconds before next question
+            }
+            
+            function playFeedbackAnimation(emoji) {
+                feedbackAnimation.textContent = emoji;
+                feedbackAnimation.classList.add('animate');
+                setTimeout(() => {
+                    feedbackAnimation.classList.remove('animate');
+                }, 800);
+            }
+
+            function showEndScreen() {
+                quizSection.classList.add('hidden');
+                endScreen.classList.remove('hidden');
+                finalScore.textContent = `Your final score is ${score} out of ${quizQuestions.length}!`;
+
+                if (score === quizQuestions.length) {
+                    badgeContainer.innerHTML = `<span class="badge">🏆</span> You're a Monument Master!`;
+                } else if (score >= quizQuestions.length / 2) {
+                    badgeContainer.innerHTML = `<span class="badge">🥇</span> Great job, Explorer!`;
+                } else {
+                    badgeContainer.innerHTML = `<span class="badge">🗺️</span> Keep exploring! You're learning so much!`;
+                }
+            }
+            
+            function resetGame() {
+                endScreen.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+            }
+
+            // --- Event Listeners ---
+            startQuizBtn.addEventListener('click', startQuiz);
+            playAgainBtn.addEventListener('click', resetGame);
+
+            // --- Initial Call ---
+            displayMonuments();
+        });
+    </script>
+</body>
+</html>

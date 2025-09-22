@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Leap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Styling */
+        :root {
+            --bg-color: #361169;
+            --text-color: #ffffff;
+            --primary-color: #F09738;
+            --secondary-color: #532093;
+            --font-family: 'Fredoka One', cursive;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 90%;
+            max-width: 800px;
+            min-height: 550px;
+            background-color: var(--secondary-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative; /* Added for badge positioning */
+        }
+
+        .game-title {
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+            padding: 0 10px;
+        }
+
+        .hint-box {
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-style: italic;
+            min-height: 30px;
+        }
+
+        .word-slots {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 10px;
+            min-height: 80px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .slot {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .slot.over {
+             background-color: rgba(240, 151, 56, 0.3);
+        }
+
+        .letter-pool-container {
+            min-height: 120px;
+        }
+
+        .letter-tiles {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            min-height: 80px;
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            cursor: grab;
+            box-shadow: 0 4px 0px #b46d22;
+            transition: transform 0.1s ease-in-out, box-shadow 0.1s;
+            user-select: none;
+        }
+
+        .tile.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        
+        .tile:active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 0px #b46d22;
+        }
+
+        #action-btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            margin-top: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 0px #b46d22;
+            transition: background-color 0.2s;
+        }
+        
+        #action-btn:hover {
+            background-color: #ffad5c;
+        }
+
+        /* --- Badge Styling --- */
+        .badge-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); /* Initially invisible */
+            background: linear-gradient(145deg, #f09738, #b46d22);
+            padding: 20px;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 5px solid #fff;
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            z-index: 100;
+        }
+
+        .badge-container.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .badge-icon {
+            font-size: 4rem;
+        }
+
+        .badge-title {
+            font-size: 1.5rem;
+            margin: 5px 0;
+        }
+        /* --- End Badge Styling --- */
+        
+        /* Animation for correct answer */
+        @keyframes correct-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .correct {
+            animation: correct-animation 0.5s ease;
+            background-color: #6ab04c !important; /* Green */
+        }
+        
+        /* Animation for incorrect answer */
+        @keyframes incorrect-animation {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .incorrect {
+            animation: incorrect-animation 0.3s linear;
+        }
+
+        /* Responsive design for tablets and desktops */
+        @media (min-width: 768px) {
+            .slot, .tile {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="badge-container" class="badge-container">
+            <div id="badge-icon" class="badge-icon">🏅</div>
+            <div id="badge-title" class="badge-title">Word Whiz!</div>
+        </div>
+
+        <h1 class="game-title">Letter Leap</h1>
+        
+        <header class="game-header">
+            <div id="level-display">Level: 1</div>
+            <div id="score-display">Score: 0</div>
+        </header>
+
+        <main class="game-area">
+            <div class="hint-box">
+                <p id="hint-text">Hint: Loading...</p>
+            </div>
+            <div id="word-slots" class="word-slots">
+                </div>
+        </main>
+
+        <footer class="letter-pool-container">
+            <div id="letter-tiles" class="letter-tiles">
+                </div>
+            <button id="action-btn">Check Word</button>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        // JavaScript Game Logic
+
+        const allWords = [
+            { word: "CAT", hint: "A common furry pet." },
+            { word: "SUN", hint: "The star that warms our planet." },
+            { word: "DOG", hint: "Man's best friend." },
+            { word: "PIG", hint: "An animal that oinks." },
+            { word: "APPLE", hint: "A fruit that can be red or green." },
+            { word: "BALL", hint: "You can throw or kick it." },
+            { word: "TRAIN", hint: "Travels on tracks." },
+            { word: "WATER", hint: "You drink this to survive." },
+            { word: "SMILE", hint: "You do this when you're happy!" },
+            { word: "EARTH", hint: "The planet we live on." },
+            { word: "HOUSE", hint: "A building where people live." },
+            { word: "TIGER", hint: "A large cat with stripes." },
+            { word: "OCEAN", hint: "A very large body of salt water." },
+            { word: "MUSIC", hint: "Sounds that are sung or played on instruments." },
+            { word: "PIZZA", hint: "A cheesy, round Italian food." },
+            { word: "FRIEND", hint: "Someone you like and enjoy being with." },
+            { word: "SCHOOL", hint: "A place where children go to learn." },
+            { word: "PLANET", hint: "A large, round object in space like Mars or Jupiter." },
+            { word: "GUITAR", hint: "A musical instrument with six strings." },
+            { word: "ORANGE", hint: "A color and a citrus fruit." }
+        ];
+
+        const badges = [
+            { title: "Word Whiz!", icon: "🏅" },
+            { title: "Spelling Star!", icon: "⭐" },
+            { title: "Letter Legend!", icon: "🏆" },
+            { title: "Vowel Victor!", icon: "🎖️" },
+            { title: "Alphabet Ace!", icon: "🥇" }
+        ];
+
+        let sessionWords = [];
+        let currentWordData = {};
+        let score = 0;
+        let level = 1;
+        let draggedTile = null;
+
+        // DOM Elements
+        const wordSlotsContainer = document.getElementById('word-slots');
+        const letterTilesContainer = document.getElementById('letter-tiles');
+        const hintText = document.getElementById('hint-text');
+        const actionBtn = document.getElementById('action-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const levelDisplay = document.getElementById('level-display');
+        const badgeContainer = document.getElementById('badge-container');
+        const badgeIcon = document.getElementById('badge-icon');
+        const badgeTitle = document.getElementById('badge-title');
+
+        function startNewGame() {
+            // Hide the badge
+            badgeContainer.classList.remove('show');
+            
+            // Reset score and level for the new session
+            score = 0;
+            level = 1;
+            scoreDisplay.textContent = `Score: ${score}`;
+            levelDisplay.textContent = `Level: ${level}`;
+            actionBtn.textContent = 'Check Word';
+
+            // Shuffle all words and pick 5 for this session
+            const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+            sessionWords = shuffled.slice(0, 5);
+            
+            setupNextWord();
+        }
+        
+        function setupNextWord() {
+            if (sessionWords.length === 0) {
+                // Defer the end of the session to allow the last word's correct animation to finish
+                setTimeout(endGameSession, 500); 
+                return;
+            }
+
+            // Get the next word from our session list
+            currentWordData = sessionWords.pop();
+            
+            wordSlotsContainer.innerHTML = '';
+            letterTilesContainer.innerHTML = '';
+            hintText.textContent = `Hint: ${currentWordData.hint}`;
+
+            for (let i = 0; i < currentWordData.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.classList.add('slot');
+                wordSlotsContainer.appendChild(slot);
+            }
+
+            const letters = currentWordData.word.split('').sort(() => Math.random() - 0.5);
+            letters.forEach(letter => {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                tile.textContent = letter;
+                tile.setAttribute('draggable', true);
+                letterTilesContainer.appendChild(tile);
+            });
+
+            addDragAndDropListeners();
+        }
+        
+        function addDragAndDropListeners() {
+            const tiles = document.querySelectorAll('.tile');
+            const slots = document.querySelectorAll('.slot');
+
+            tiles.forEach(tile => {
+                tile.addEventListener('dragstart', (e) => {
+                    draggedTile = e.target;
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                });
+                tile.addEventListener('dragend', (e) => e.target.classList.remove('dragging'));
+            });
+
+            const containers = [wordSlotsContainer, letterTilesContainer, ...slots];
+            containers.forEach(container => {
+                 container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if(container.classList.contains('slot')){ container.classList.add('over'); }
+                });
+                container.addEventListener('dragleave', e => {
+                    if(container.classList.contains('slot')){ container.classList.remove('over'); }
+                });
+                container.addEventListener('drop', e => {
+                    e.preventDefault();
+                    container.classList.remove('over');
+                    if (draggedTile) {
+                       if (container.classList.contains('slot') && container.children.length === 0) {
+                           container.appendChild(draggedTile);
+                       } else if (container.id === 'letter-tiles') {
+                           container.appendChild(draggedTile);
+                       }
+                    }
+                });
+            });
+        }
+        
+        function checkWord() {
+            let placedWord = "";
+            const slots = wordSlotsContainer.querySelectorAll('.slot');
+            
+            slots.forEach(slot => {
+                if(slot.children.length > 0) placedWord += slot.children[0].textContent;
+            });
+
+            if (placedWord.length !== currentWordData.word.length) return;
+
+            if (placedWord === currentWordData.word) {
+                // Correct!
+                score += 10;
+                level++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                levelDisplay.textContent = `Level: ${level}`;
+                
+                slots.forEach(slot => slot.children[0].classList.add('correct'));
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                
+                setTimeout(setupNextWord, 1500);
+            } else {
+                // Incorrect!
+                wordSlotsContainer.classList.add('incorrect');
+                setTimeout(() => wordSlotsContainer.classList.remove('incorrect'), 300);
+            }
+        }
+
+        function endGameSession() {
+            wordSlotsContainer.innerHTML = '';
+            letterTilesContainer.innerHTML = '';
+            hintText.innerHTML = `🎉 <strong>Great job!</strong> You finished the round! 🎉`;
+            
+            // Award a random badge
+            const randomBadge = badges[Math.floor(Math.random() * badges.length)];
+            badgeIcon.textContent = randomBadge.icon;
+            badgeTitle.textContent = randomBadge.title;
+            badgeContainer.classList.add('show');
+            
+            actionBtn.textContent = 'Play Again';
+        }
+
+        // Event Listener for the main action button
+        actionBtn.addEventListener('click', () => {
+            if (actionBtn.textContent === 'Check Word') {
+                checkWord();
+            } else {
+                startNewGame();
+            }
+        });
+
+        // Initialize the first game session
+        document.addEventListener('DOMContentLoaded', startNewGame);
+    </script>
+</body>
+</html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning World - Gamified Education Platform</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://db.onlinewebfonts.com/c/14936bb7a4b6575fd2eee80a3ab52cc2?family=Feather+Bold" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -26,10 +27,10 @@
             <div class="nav-content">
                 <div class="nav-brand">
                     <i class="fas fa-graduation-cap"></i>
-                    <span>Learning World</span>
+                    <span>Pappy Learn</span>
                 </div>
                 <div class="nav-links">
-                    <a href="#" class="nav-link" onclick="showHome()">
+                    <a href="index.html" class="nav-link" onclick="showHome()">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
@@ -48,7 +49,7 @@
                 </div>
                 <div class="nav-user">
                     <div class="user-stats">
-                        <span class="coins" id="user-coins">0 🪙</span>
+                        <span class="coins" id="user-coins">0 XP</span>
                         <span class="level" id="user-level">Level 1</span>
                     </div>
                     <button class="logout-btn" onclick="logout()">
@@ -226,9 +227,44 @@
 
             <!-- Home Page -->
             <div id="home-page" class="page">
+
+                 <!-- Hero Section -->
+                <div class = "new-hero">
+                    <section class="hero" id="home">
+                        <div class="hero-content1">
+                            <div class="hero-text">
+                                <h1 class="hero-title">Learn, <span class="highlight">Play</span> and<span class="highlight"> Grow</span> every day!</h1>
+                                <p class="hero-subtitle">Join our magical learning adventure where curiosity meets creativity!</p>
+                                <div class="hero-buttons">
+                                    <button class="btn btn-primary btn-large" id="startQuest">
+                                        Start Learning Quest
+                                    </button>
+                                    <button class="btn btn-secondary btn-large" id="playExplore">
+                                        Play & Explore
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="hero-visual">
+                                <div class="floating-elements">
+                                    <img src="../public/Assets/Images/parrot-hero.png" alt="Pappy Character" class="hero-character">
+                                    <div class="floating-icons">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clouds">
+                            <div class="cloud cloud-1"></div>
+                            <div class="cloud cloud-2"></div>
+                            <div class="cloud cloud-3"></div>
+                        </div>
+                    </section>
+                </div>
+                
+                
                 <div class="hero-section">
                     <div class="hero-content">
-                        <h1>Welcome to Learning World!</h1>
+                        <h1>Choose Your Adventure World</h1>
                         <p>Choose your adventure and start learning today!</p>
                         <div class="user-welcome">
                             <h2>Hello, <span id="user-name">Student</span>! 👋</h2>
@@ -239,7 +275,7 @@
 
                 <div class="worlds-grid">
                     <div class="world-card" onclick="enterWorld('science')">
-                        <div class="world-icon">🔬</div>
+                        <div class="world-icon"><img src="../public/Assets/Gif/science-world.gif" height="150px"></div>
                         <h3>Science World</h3>
                         <p>Explore the wonders of science!</p>
                         <div class="world-level">Level <span id="science-level">1</span></div>
@@ -251,7 +287,7 @@
                     </div>
                     
                     <div class="world-card" onclick="enterWorld('math')">
-                        <div class="world-icon">🧮</div>
+                        <div class="world-icon"><img src="../public/Assets/Gif/maths-world.gif" height="150px"></div>
                         <h3>Math World</h3>
                         <p>Master numbers and calculations!</p>
                         <div class="world-level">Level <span id="math-level">1</span></div>
@@ -263,7 +299,7 @@
                     </div>
                     
                     <div class="world-card" onclick="enterWorld('history')">
-                        <div class="world-icon">🏛️</div>
+                        <div class="world-icon"><img src="../public/Assets/Gif/history-world.gif" height="150px"></div>
                         <h3>Indian History World</h3>
                         <p>Discover India's rich heritage!</p>
                         <div class="world-level">Level <span id="history-level">1</span></div>
@@ -275,7 +311,7 @@
                     </div>
                     
                     <div class="world-card" onclick="enterWorld('lifeSkills')">
-                        <div class="world-icon">🌟</div>
+                        <div class="world-icon"><img src="../public/Assets/Gif/life-skills-world.gif" height="150px"></div>
                         <h3>Life Skills World</h3>
                         <p>Learn essential life skills!</p>
                         <div class="world-level">Level <span id="life-skills-level">1</span></div>
@@ -285,6 +321,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="world-card" onclick="enterWorld('lifeSkills')">
+                        <div class="world-icon"><img src="../public/Assets/Gif/ai-future-world.gif" height="150px"></div>
+                        <h3>Ai & Future City</h3>
+                        <p>Discover AI & Digital Citizenship</p>
+                        <div class="world-level">Level <span id="life-skills-level">1</span></div>
+                        <div class="world-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="world-card" onclick="enterWorld('lifeSkills')">
+                        <div class="world-icon"><img src="../public/Assets/Gif/space-world.gif" height="150px"></div>
+                        <h3>Space Center</h3>
+                        <p>Learn About Our Solar System</p>
+                        <div class="world-level">Level <span id="life-skills-level">1</span></div>
+                        <div class="world-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+        
                 </div>
 
                 <div class="challenges-section">
@@ -506,5 +568,21 @@
     <script src="js/app.js"></script>
     <script src="js/learning.js"></script>
     <script src="js/leaderboard.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select the nav element by its tag name
+            const navElement = document.querySelector('nav');
+
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 10) {
+                // Add a class to the nav element
+                navElement.classList.add('nav-scrolled');
+                } else {
+                // Remove the class from the nav element
+                navElement.classList.remove('nav-scrolled');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

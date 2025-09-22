@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Space Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a2a;
+            color: #ffffff;
+            overflow: hidden;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><pattern id="star-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="white"/><circle cx="50" cy="60" r="1" fill="white"/><circle cx="90" cy="30" r="0.5" fill="white"/></pattern></defs><rect width="100%" height="100%" fill="url(%23star-pattern)"/></svg>');
+            animation: space-scroll 60s linear infinite;
+        }
+
+        @keyframes space-scroll {
+            from { background-position: 0 0; }
+            to { background-position: -500px 500px; }
+        }
+        
+        .fredoka {
+            font-family: 'Feather Bold', sans-serif;
+        }
+
+        .planet {
+            cursor: pointer;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        .planet:hover {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 20px rgba(255, 255, 200, 0.9));
+        }
+
+        .sun {
+            animation: pulse 4s infinite ease-in-out;
+            filter: drop-shadow(0 0 40px rgba(255, 223, 0, 0.9));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .orbit {
+            position: absolute;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .fact-modal {
+            background: rgba(10, 10, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border: 2px solid #6b21a8;
+        }
+        
+        .fuel-gauge-bg {
+            background-color: #333;
+        }
+        
+        .fuel-gauge-fill {
+            background: linear-gradient(to top, #4ade80, #86efac);
+            transition: height 0.5s ease-out;
+        }
+
+        .quiz-panel {
+            background: radial-gradient(circle, rgba(49, 28, 93, 0.9) 0%, rgba(18, 5, 41, 0.9) 100%);
+            border: 2px solid #a855f7;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5), inset 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .fuel-cell {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #4a044e;
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        .fuel-cell-active {
+            background-color: #4ade80;
+            box-shadow: 0 0 15px #4ade80;
+        }
+        
+        .quiz-option:hover {
+            background-color: #9333ea;
+            transform: scale(1.05);
+        }
+
+        .rocket-launch {
+            animation: launch 3s ease-in-out forwards;
+        }
+        
+        .rocket-sputter {
+            animation: sputter 2s ease-in-out infinite;
+        }
+        
+        @keyframes launch {
+            0% { transform: translateY(0) rotate(0); }
+            20% { transform: translateY(-20px) rotate(-2deg); }
+            40% { transform: translateY(-40px) rotate(2deg); }
+            100% { transform: translateY(-120vh) rotate(5deg); opacity: 0; }
+        }
+
+        @keyframes sputter {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            25% { transform: translateY(-5px) rotate(-1deg); }
+            50% { transform: translateY(0) rotate(0); }
+            75% { transform: translateY(-5px) rotate(1deg); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            animation: confetti-fall 2s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="w-full h-screen flex items-center justify-center">
+
+    <!-- Stage 1: Solar System Explorer -->
+    <div id="explorer-view" class="w-full h-full relative p-4">
+        <div class="absolute top-4 left-4 text-center z-20 bg-purple-900 bg-opacity-50 p-4 rounded-xl shadow-lg">
+            <h1 class="text-3xl md:text-5xl fredoka text-yellow-300">Space Explorer</h1>
+            <p class="text-sm md:text-lg text-gray-200">Click on planets to learn fun facts!</p>
+        </div>
+        
+        <!-- Celestial Bodies -->
+        <div id="solar-system" class="w-full h-full relative">
+            <!-- Sun -->
+            <div data-name="Sun" class="planet sun absolute" style="top: 45%; left: 47%; width: 12vmin; height: 12vmin; transform: translate(-50%, -50%);">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="url(#sunGradient)"/>
+                    <defs>
+                        <radialGradient id="sunGradient">
+                            <stop offset="0%" stop-color="#FFD700" />
+                            <stop offset="90%" stop-color="#FFA500" />
+                            <stop offset="100%" stop-color="#FF4500" />
+                        </radialGradient>
+                    </defs>
+                </svg>
+            </div>
+            
+            <!-- Orbits and Planets -->
+            <!-- Mercury -->
+            <div class="orbit" style="top:50%; left:50%; width: 18vmin; height: 18vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Mercury" class="planet absolute" style="top: 50%; left: calc(50% + 9vmin); width: 2vmin; height: 2vmin; transform: translate(-50%, -50%);">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#E63710"/></svg>
+            </div>
+            <!-- Venus -->
+            <div class="orbit" style="top:50%; left:50%; width: 26vmin; height: 26vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Venus" class="planet absolute" style="top: calc(50% - 13vmin); left: 50%; width: 3vmin; height: 3vmin; transform: translate(-50%, -50%);">
+                 <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#F0EB78"/></svg>
+            </div>
+            <!-- Earth -->
+            <div class="orbit" style="top:50%; left:50%; width: 36vmin; height: 36vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Earth" class="planet absolute" style="top: 50%; left: calc(50% - 18vmin); width: 3.5vmin; height: 3.5vmin; transform: translate(-50%, -50%);">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#4682B4"/><path d="M 60 20 C 50 40, 40 50, 30 70" stroke="green" stroke-width="20" fill="none"/></svg>
+                <!-- Moon -->
+                <div data-name="Moon" class="planet absolute" style="top: -1vmin; left: -1vmin; width: 1.2vmin; height: 1.2vmin;">
+                     <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#D3D3D3"/></svg>
+                </div>
+            </div>
+            <!-- Mars -->
+            <div class="orbit" style="top:50%; left:50%; width: 46vmin; height: 46vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Mars" class="planet absolute" style="top: calc(50% + 23vmin); left: 50%; width: 2.8vmin; height: 2.8vmin; transform: translate(-50%, -50%);">
+                 <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#BA1A00"/></svg>
+            </div>
+            <!-- Jupiter -->
+            <div class="orbit" style="top:50%; left:50%; width: 60vmin; height: 60vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Jupiter" class="planet absolute" style="top: 50%; left: calc(50% + 30vmin); width: 7vmin; height: 7vmin; transform: translate(-50%, -50%);">
+                 <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#D2B48C"/><circle cx="50" cy="50" r="10" fill="#B8860B"/></svg>
+                 <!-- Europa -->
+                 <div data-name="Europa" class="planet absolute" style="top: -1.5vmin; left: 50%; width: 1.5vmin; height: 1.5vmin;">
+                      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#FAFAD2"/></svg>
+                 </div>
+            </div>
+            <!-- Saturn -->
+            <div class="orbit" style="top:50%; left:50%; width: 75vmin; height: 75vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Saturn" class="planet absolute" style="top: calc(50% - 37.5vmin); left: 50%; width: 10vmin; height: 6vmin; transform: translate(-50%, -50%) rotate(-20deg);">
+                 <svg viewBox="0 0 100 60"><ellipse cx="50" cy="30" rx="48" ry="10" fill="#B38A5F" stroke="#D2B48C" stroke-width="2"/><circle cx="50" cy="30" r="25" fill="#F0E68C"/></svg>
+                  <!-- Titan -->
+                 <div data-name="Titan" class="planet absolute" style="top: 50%; left: -2vmin; width: 1.8vmin; height: 1.8vmin;">
+                      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#FFA500"/></svg>
+                 </div>
+            </div>
+             <!-- Uranus -->
+            <div class="orbit" style="top:50%; left:50%; width: 90vmin; height: 90vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Uranus" class="planet absolute" style="top: 50%; left: calc(50% - 45vmin); width: 5vmin; height: 5vmin; transform: translate(-50%, -50%);">
+                 <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#AFEEEE"/></svg>
+            </div>
+            <!-- Neptune -->
+            <div class="orbit" style="top:50%; left:50%; width: 95vmin; height: 95vmin; transform: translate(-50%, -50%);"></div>
+            <div data-name="Neptune" class="planet absolute" style="top: calc(50% + 47.5vmin); left: 50%; width: 4.8vmin; height: 4.8vmin; transform: translate(-50%, -50%);">
+                 <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#4169E1"/></svg>
+            </div>
+        </div>
+
+        <button id="start-quiz-btn" class="absolute bottom-5 right-5 fredoka text-xl bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105 z-20">
+            🚀 Fuel the Rocket!
+        </button>
+    </div>
+
+    <!-- Fact Modal -->
+    <div id="fact-modal" class="hidden absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+        <div class="fact-modal rounded-2xl p-6 md:p-8 text-center max-w-md w-full relative shadow-2xl">
+            <h2 id="fact-title" class="text-3xl fredoka text-yellow-300 mb-4"></h2>
+            <p id="fact-text" class="text-lg text-gray-200"></p>
+            <button id="close-modal-btn" class="absolute top-2 right-2 text-3xl text-white">&times;</button>
+        </div>
+    </div>
+    
+    <!-- Stage 2: Quiz View -->
+    <div id="quiz-view" class="hidden w-full h-full flex items-center justify-center p-4">
+        <div class="w-full max-w-5xl flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+            <!-- Rocket & Fuel Gauge -->
+            <div class="flex flex-col items-center">
+                 <h2 class="text-3xl fredoka text-yellow-300 mb-4">Launch System</h2>
+                <div id="rocket-container" class="relative w-32 h-80 flex flex-col-reverse items-center">
+                    <div id="rocket-svg" class="w-24 h-32 absolute bottom-0 transition-transform duration-500">
+                        <svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 0 L75 40 H25 Z" fill="#D3D3D3" stroke="#A9A9A9" stroke-width="2"/>
+                            <rect x="25" y="40" width="50" height="85" fill="#FFFFFF" stroke="#A9A9A9" stroke-width="2"/>
+                            <path d="M25 125 L0 150 H35 Z" fill="#FF6347" stroke="#CD5C5C" stroke-width="2"/>
+                            <path d="M75 125 L100 150 H65 Z" fill="#FF6347" stroke="#CD5C5C" stroke-width="2"/>
+                            <circle cx="50" cy="75" r="18" fill="#4169E1" stroke="#00008B" stroke-width="3"/>
+                        </svg>
+                    </div>
+                    <div id="fuel-gauge-container" class="w-12 h-64 rounded-lg border-2 border-purple-400 p-1 flex flex-col-reverse gap-1 bg-black bg-opacity-25">
+                        <!-- Fuel cells are generated by JavaScript -->
+                    </div>
+                </div>
+                <p id="fuel-tracker" class="mt-4 text-xl fredoka text-gray-200">Fuel: 0 / 10</p>
+            </div>
+            
+            <!-- Question Area -->
+            <div class="w-full lg:w-2/3 quiz-panel p-6 rounded-2xl shadow-lg">
+                <p id="question-counter" class="text-right text-yellow-300 font-bold mb-2">Question 1/10</p>
+                <h3 id="question-text" class="text-2xl font-semibold mb-6 text-center h-20 flex items-center justify-center"></h3>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Result View -->
+    <div id="result-view" class="hidden flex-col items-center justify-center text-center p-4">
+        <div id="result-rocket" class="w-48 h-64 mb-8">
+            <!-- Rocket SVG will be copied here -->
+        </div>
+        <h2 id="result-title" class="text-5xl fredoka text-yellow-300 mb-4"></h2>
+        <p id="result-message" class="text-xl mb-6"></p>
+        <button id="replay-btn" class="fredoka text-xl bg-purple-700 hover:bg-purple-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition transform hover:scale-105">
+            Play Again!
+        </button>
+    </div>
+
+    <div id="confetti-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+
+    <script>
+        const gameData = {
+            facts: {
+                "Sun": "I'm a star, not a planet! I'm so big you could fit over a million Earths inside me.",
+                "Mercury": "I'm the fastest planet, zooming around the Sun in just 88 Earth days!",
+                "Venus": "I'm the hottest planet in the solar system, even though I'm not the closest to the Sun.",
+                "Earth": "I'm your home! I'm the only planet we know of with liquid water and life.",
+                "Moon": "I'm Earth's best friend! I control the tides in your oceans.",
+                "Mars": "They call me the Red Planet. I have the tallest volcano in the solar system!",
+                "Jupiter": "I'm the biggest planet! I have a giant storm called the Great Red Spot that's bigger than Earth.",
+                "Europa": "I'm one of Jupiter's moons! Scientists think I might have a salty ocean under my icy shell.",
+                "Saturn": "I'm famous for my beautiful rings, which are made of ice and rock.",
+                "Titan": "I'm Saturn's largest moon. I'm the only moon with a thick atmosphere like a planet!",
+                "Uranus": "I'm a bit of a silly planet because I spin on my side like a rolling ball.",
+                "Neptune": "I'm the windiest planet. My winds can be three times faster than Earth's hurricanes!"
+            },
+            quiz: [
+                { q: "Which is the hottest planet?", a: "Venus", o: ["Mercury", "Venus", "Mars", "Earth"] },
+                { q: "What is the name of Earth's moon?", a: "Moon", o: ["Titan", "Europa", "Phobos", "Moon"] },
+                { q: "Which planet is known as the Red Planet?", a: "Mars", o: ["Jupiter", "Mars", "Saturn", "Venus"] },
+                { q: "What are Saturn's rings made of?", a: "Ice and rock", o: ["Gas", "Ice and rock", "Gold", "Water"] },
+                { q: "Which is the largest planet?", a: "Jupiter", o: ["Jupiter", "Saturn", "Neptune", "Earth"] },
+                { q: "Which planet spins on its side?", a: "Uranus", o: ["Uranus", "Neptune", "Earth", "Mars"] },
+                { q: "What is the Sun?", a: "A star", o: ["A planet", "A moon", "A star", "A comet"] },
+                { q: "Which is the fastest planet to orbit the Sun?", a: "Mercury", o: ["Earth", "Mercury", "Venus", "Jupiter"] },
+                { q: "Which planet has a storm called the Great Red Spot?", a: "Jupiter", o: ["Mars", "Saturn", "Jupiter", "Venus"] },
+                { q: "Which planet is the windiest?", a: "Neptune", o: ["Neptune", "Uranus", "Earth", "Saturn"] },
+                { q: "Which moon might have an ocean under its ice?", a: "Europa", o: ["Titan", "Moon", "Europa", "Phobos"] },
+                { q: "How many Earths could fit inside the Sun?", a: "Over a million", o: ["One hundred", "One thousand", "Over a million", "Ten"] },
+                { q: "What do we call our home planet?", a: "Earth", o: ["Mars", "The Moon", "Earth", "Sol"] },
+                { q: "Which is Saturn's largest moon?", a: "Titan", o: ["Europa", "Ganymede", "Titan", "Moon"] },
+                { q: "What object controls Earth's ocean tides?", a: "Moon", o: ["Sun", "Moon", "Mars", "Jupiter"] },
+                { q: "Which planet is closest to the Sun?", a: "Mercury", o: ["Venus", "Earth", "Mercury", "Mars"] },
+                { q: "Which is the farthest planet from the Sun?", a: "Neptune", o: ["Uranus", "Neptune", "Saturn", "Jupiter"] },
+                { q: "Which planet is famous for its beautiful rings?", a: "Saturn", o: ["Jupiter", "Uranus", "Mars", "Saturn"] },
+                { q: "What is the tallest volcano in the solar system on?", a: "Mars", o: ["Earth", "Venus", "Mars", "Mercury"] },
+                { q: "Which moon has a thick atmosphere?", a: "Titan", o: ["Moon", "Europa", "Titan", "Ganymede"] }
+            ]
+        };
+
+        // DOM Elements
+        const explorerView = document.getElementById('explorer-view');
+        const quizView = document.getElementById('quiz-view');
+        const resultView = document.getElementById('result-view');
+        const factModal = document.getElementById('fact-modal');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const replayBtn = document.getElementById('replay-btn');
+        const planets = document.querySelectorAll('.planet');
+
+        // Game State
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let synth;
+
+        function initializeSounds() {
+            if (Tone.context.state !== 'running') {
+                Tone.start();
+            }
+            synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        }
+        
+        // --- UI Setup ---
+        function setupFuelGauge() {
+            const container = document.getElementById('fuel-gauge-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('fuel-cell', 'w-full', 'h-full', 'rounded-sm');
+                container.appendChild(cell);
+            }
+        }
+
+        // --- Explorer Logic ---
+        planets.forEach(planet => {
+            planet.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const name = planet.dataset.name;
+                if (gameData.facts[name]) {
+                    showFact(name);
+                }
+            });
+        });
+
+        function showFact(name) {
+            document.getElementById('fact-title').textContent = name;
+            document.getElementById('fact-text').textContent = gameData.facts[name];
+            factModal.classList.remove('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            factModal.classList.add('hidden');
+        });
+        
+        factModal.addEventListener('click', (e) => {
+             if (e.target === factModal) {
+                factModal.classList.add('hidden');
+             }
+        });
+
+        // --- Game Flow Logic ---
+        startQuizBtn.addEventListener('click', () => {
+            initializeSounds();
+            explorerView.classList.add('hidden');
+            quizView.classList.remove('hidden');
+            startQuiz();
+        });
+
+        replayBtn.addEventListener('click', () => {
+            resultView.classList.add('hidden');
+            explorerView.classList.remove('hidden');
+            resetGame();
+        });
+        
+        function resetGame() {
+            score = 0;
+            currentQuestionIndex = 0;
+            updateFuelGauge();
+            document.getElementById('fuel-tracker').textContent = `Fuel: 0 / 10`;
+            const rocket = document.getElementById('result-rocket').querySelector('svg');
+            if(rocket) {
+               rocket.classList.remove('rocket-launch', 'rocket-sputter');
+            }
+        }
+
+        // --- Quiz Logic ---
+        function startQuiz() {
+            currentQuestions = shuffleArray(gameData.quiz).slice(0, 10);
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < currentQuestions.length) {
+                const question = currentQuestions[currentQuestionIndex];
+                document.getElementById('question-counter').textContent = `Question ${currentQuestionIndex + 1}/10`;
+                document.getElementById('question-text').textContent = question.q;
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                const shuffledOptions = shuffleArray(question.o);
+
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('quiz-option', 'bg-purple-700', 'text-white', 'p-4', 'rounded-lg', 'font-semibold', 'transition-transform', 'duration-200');
+                    button.onclick = () => selectAnswer(option, question.a, button);
+                    optionsContainer.appendChild(button);
+                });
+            } else {
+                showResult();
+            }
+        }
+
+        function selectAnswer(selected, correct, button) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.disabled = true); // Disable all options
+
+            if (selected === correct) {
+                score++;
+                button.style.backgroundColor = '#4ade80'; // Green
+                playCorrectSound();
+                showConfetti(button);
+            } else {
+                button.style.backgroundColor = '#f87171'; // Red
+                playIncorrectSound();
+                // Highlight correct answer
+                options.forEach(opt => {
+                    if (opt.textContent === correct) {
+                        opt.style.backgroundColor = '#4ade80';
+                    }
+                });
+            }
+
+            updateFuelGauge();
+            document.getElementById('fuel-tracker').textContent = `Fuel: ${score}/10`;
+            
+            setTimeout(() => {
+                currentQuestionIndex++;
+                displayQuestion();
+            }, 1500);
+        }
+        
+        function updateFuelGauge() {
+            const cells = document.querySelectorAll('#fuel-gauge-container .fuel-cell');
+            cells.forEach((cell, index) => {
+                if (index < score) {
+                    cell.classList.add('fuel-cell-active');
+                } else {
+                    cell.classList.remove('fuel-cell-active');
+                }
+            });
+        }
+
+        // --- Result Logic ---
+        function showResult() {
+            quizView.classList.add('hidden');
+            resultView.classList.remove('hidden');
+            
+            const resultRocketContainer = document.getElementById('result-rocket');
+            resultRocketContainer.innerHTML = '';
+            const rocketClone = document.getElementById('rocket-svg').cloneNode(true);
+            resultRocketContainer.appendChild(rocketClone);
+
+            if (score >= 8) {
+                document.getElementById('result-title').textContent = "Blast Off!";
+                document.getElementById('result-message').textContent = `Awesome! You scored ${score}/10 and fueled the rocket for launch!`;
+                rocketClone.classList.add('rocket-launch');
+                playLaunchSound();
+            } else {
+                document.getElementById('result-title').textContent = "Oh No!";
+                document.getElementById('result-message').textContent = `You scored ${score}/10. The rocket needs more fuel. Try again!`;
+                rocketClone.classList.add('rocket-sputter');
+                playSputterSound();
+            }
+        }
+        
+        // --- Sound Effects ---
+        function playCorrectSound() {
+            synth.triggerAttackRelease(["C5", "E5", "G5"], "8n");
+        }
+        
+        function playIncorrectSound() {
+            synth.triggerAttackRelease("C3", "8n");
+        }
+        
+        function playLaunchSound() {
+            const noise = new Tone.Noise("white").toDestination();
+            noise.volume.value = -10;
+            const filter = new Tone.AutoFilter("2n").toDestination().start();
+            noise.connect(filter);
+            noise.start();
+            setTimeout(() => noise.stop(), 2000);
+        }
+        
+        function playSputterSound() {
+            const synth = new Tone.NoiseSynth().toDestination();
+            synth.triggerAttackRelease("16n", "+0.1");
+            synth.triggerAttackRelease("16n", "+0.4");
+            synth.triggerAttackRelease("16n", "+0.6");
+        }
+
+        // --- Helpers ---
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        function showConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const container = document.getElementById('confetti-container');
+            for(let i=0; i<30; i++){
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const color = ['#fde68a', '#86efac', '#a78bfa'][Math.floor(Math.random() * 3)];
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                confetti.style.backgroundColor = color;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                const anim = confetti.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${(Math.random() - 0.5) * 400}px, ${(Math.random() - 0.5) * 400}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: 1500 + Math.random() * 1000,
+                    easing: 'ease-out'
+                });
+                anim.onfinish = () => confetti.remove();
+                container.appendChild(confetti);
+            }
+        }
+
+        // Initial setup on script load
+        setupFuelGauge();
+        updateFuelGauge();
+    </script>
+</body>
+</html>
+
+
+
+

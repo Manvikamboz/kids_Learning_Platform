@@ -13,8 +13,8 @@
     --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
     --light-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     
-    --primary-color: #667eea;
-    --secondary-color: #764ba2;
+    --primary-color: #532093;
+    --secondary-color: #F09738;
     --success-color: #4facfe;
     --warning-color: #43e97b;
     --danger-color: #f5576c;
@@ -32,9 +32,25 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+nav {
+  position: fixed;
+  box-shadow: var(--shadow);
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--primary-color); /* Your nav's background color */
+  z-index: 1000;
+  transition: border-bottom 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.nav-scrolled {  
+  border-bottom: 8px solid var(--secondary-color); /* A slightly lighter border color */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a nice shadow for depth */
+}
+
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--primary-gradient);
+    font-family: 'Feather Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #faf9f6;
     min-height: 100vh;
     color: var(--text-dark);
     overflow-x: hidden;
@@ -110,8 +126,8 @@ body {
 }
 
 /* Navigation */
-.navbar {
-    background: rgba(255, 255, 255, 0.95);
+/* .navbar {
+    background: var(--primary-color);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: var(--shadow);
@@ -121,7 +137,7 @@ body {
     right: 0;
     z-index: 1000;
     transition: var(--transition);
-}
+} */
 
 .nav-content {
     max-width: 1200px;
@@ -139,7 +155,7 @@ body {
     gap: 12px;
     font-size: 24px;
     font-weight: 800;
-    color: var(--primary-color);
+    color: white;
     text-decoration: none;
 }
 
@@ -159,7 +175,7 @@ body {
     gap: 8px;
     padding: 12px 20px;
     border-radius: var(--border-radius);
-    color: var(--text-dark);
+    color: white;
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
@@ -174,7 +190,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: var(--primary-gradient);
+    background: var(--secondary-color);
     transition: var(--transition);
     z-index: -1;
 }
@@ -209,12 +225,12 @@ body {
 }
 
 .coins {
-    background: var(--warning-gradient);
+    background: var(--secondary-color);
     color: var(--white);
 }
 
 .level {
-    background: var(--success-gradient);
+    background: var(--secondary-color);
     color: var(--white);
 }
 
@@ -415,7 +431,7 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-gradient);
+    background: var(--primary-color);
     color: var(--white);
     box-shadow: var(--shadow);
 }
@@ -426,7 +442,7 @@ body {
 }
 
 .btn-secondary {
-    background: var(--light-gradient);
+    background: var(--secondary-color);
     color: var(--text-dark);
     border: 2px solid var(--border-color);
 }
@@ -515,6 +531,150 @@ body {
 }
 
 /* Home Page */
+#startQuest{
+    background-color: var(--secondary-color);
+   
+}
+
+#playExplore{
+    background-color: white;
+    color: var(--primary-color);
+    
+}
+
+.hero {
+  min-height: 80vh;
+  padding: 120px 20px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content1 {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 0px;
+  padding-top: 0px;
+}
+
+.new-hero{
+    background-color: var(--primary-color);
+    margin-left: -181px;
+    margin-right: -180px;
+    margin-top: -60px;
+}
+
+.hero-title {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.hero-title .highlight {
+  color: var(--secondary-color);
+  position: relative;
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  color: white;
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.floating-elements {
+  position: relative;
+  width: 400px;
+  height: 400px;
+}
+
+.hero-character {
+  width:600px;
+  z-index: 1000000;
+  animation: foat 3s ease-in-out infinite;
+}
+
+.floating-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.floating-icon {
+  position: absolute;
+  font-size: 2rem;
+  animation: floatIcon 4s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-soft);
+}
+
+.floating-icon:nth-child(1) { top: 20%; right: 10%; animation-delay: 0s; }
+.floating-icon:nth-child(2) { top: 60%; right: 0%; animation-delay: 1s; }
+.floating-icon:nth-child(3) { bottom: 20%; right: 20%; animation-delay: 2s; }
+.floating-icon:nth-child(4) { bottom: 10%; left: 30%; animation-delay: 3s; }
+.floating-icon:nth-child(5) { top: 30%; left: 10%; animation-delay: 0.5s; }
+
+/* Clouds */
+.clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  opacity: 0.7;
+  animation: drift 20s infinite linear;
+}
+
+.cloud-1 {
+  width: 100px;
+  height: 40px;
+  top: 20%;
+  left: -100px;
+}
+
+.cloud-2 {
+  width: 150px;
+  height: 60px;
+  top: 40%;
+  left: -150px;
+  animation-delay: -10s;
+}
+
+.cloud-3 {
+  width: 80px;
+  height: 35px;
+  top: 70%;
+  left: -80px;
+  animation-delay: -5s;
+}
+
 .hero-section {
     text-align: center;
     padding: 60px 0;
@@ -524,35 +684,36 @@ body {
 .hero-content h1 {
     font-size: 48px;
     font-weight: 800;
-    color: var(--white);
+    color: var(--primary-color);
     margin-bottom: 20px;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+   
 }
 
 .hero-content p {
+    color: var(--text-light);
     font-size: 20px;
-    color: rgba(255, 255, 255, 0.9);
+    
     margin-bottom: 40px;
 }
 
 .user-welcome {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 1);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius-lg);
     padding: 30px;
     display: inline-block;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 3px solid var(--primary-color);
 }
 
 .user-welcome h2 {
     font-size: 28px;
-    color: var(--white);
+    color: var(--text-dark);
     margin-bottom: 10px;
 }
 
 .user-welcome p {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-light);
     margin: 0;
 }
 
@@ -561,40 +722,42 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
-    margin-bottom: 60px;
+    
+    margin-bottom: 30px;
 }
 
 .world-card {
-    background: rgba(255, 255, 255, 0.95);
+    border: 4px var(--primary-color);
+    background: rgba(255, 255, 255, 1);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius-lg);
     padding: 30px;
     text-align: center;
     cursor: pointer;
     transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
 }
 
 .world-card::before {
+    border: 4px var(--primary-color);
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: var(--primary-gradient);
-    opacity: 0.1;
     transition: var(--transition);
     z-index: -1;
 }
 
 .world-card:hover::before {
+    border: 4px var(--primary-color);
     left: 0;
 }
 
 .world-card:hover {
+    border: 4px var(--primary-color);
     transform: translateY(-10px);
     box-shadow: var(--shadow-lg);
 }
@@ -618,7 +781,7 @@ body {
 }
 
 .world-level {
-    background: var(--primary-gradient);
+    background: var(--primary-color);
     color: var(--white);
     padding: 8px 16px;
     border-radius: 20px;
@@ -629,6 +792,7 @@ body {
 
 .world-progress {
     width: 100%;
+    background-color: var(--primary-color);
 }
 
 .progress-bar {
@@ -641,7 +805,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: var(--success-gradient);
+    background: var(--secondary-color);
     border-radius: 3px;
     transition: width 0.3s ease;
 }
@@ -772,7 +936,7 @@ body {
 }
 
 .world-progress {
-    background: var(--primary-gradient);
+    background: var(--primary-color);
     color: var(--white);
     padding: 8px 16px;
     border-radius: 20px;
@@ -794,13 +958,13 @@ body {
 }
 
 .lesson-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 1);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius-lg);
     padding: 25px;
     cursor: pointer;
     transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 3px solid var(--primary-color);
     position: relative;
     overflow: hidden;
 }
@@ -862,7 +1026,7 @@ body {
 }
 
 .lesson-reward {
-    background: var(--warning-gradient);
+    background: var(--primary-color);
     color: var(--white);
     padding: 4px 12px;
     border-radius: 12px;
@@ -895,7 +1059,7 @@ body {
 }
 
 .lesson-progress {
-    background: var(--success-gradient);
+    background: var(--primary-color     );
     color: var(--white);
     padding: 8px 16px;
     border-radius: 20px;

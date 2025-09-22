@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Superhero Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-fredoka {
+            font-family: 'Fredoka One', cursive;
+        }
+        .comic-panel {
+            border: 4px solid #ffffff;
+            box-shadow: 8px 8px 0px #ffffff;
+        }
+        .option-btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .option-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .modal-leave {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+        .star-icon {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-[#361169] min-h-screen flex items-center justify-center p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto">
+        
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl md:text-5xl font-fredoka text-white">Safety Superhero Training</h1>
+            <div class="mt-4 flex items-center justify-center space-x-4">
+                <div class="flex items-center bg-[#532093] rounded-full px-4 py-2 shadow-md">
+                    <span class="text-2xl star-icon">★</span>
+                    <span id="score" class="ml-2 text-2xl font-bold text-white">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-[#532093] rounded-full h-4 mb-8 shadow-inner">
+            <div id="progress-bar" class="bg-[#F09738] h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <!-- Game Card -->
+        <main id="game-card" class="bg-[#532093] rounded-2xl p-6 md:p-8 comic-panel">
+            <div id="scenario-container" class="text-center">
+                <div id="scenario-icon" class="text-6xl mb-4 text-white"></div>
+                <p id="scenario-text" class="text-xl md:text-2xl font-semibold text-white min-h-[96px] flex items-center justify-center"></p>
+            </div>
+            <div id="options-container" class="mt-8 grid grid-cols-1 gap-4">
+                <!-- Options will be injected here by JavaScript -->
+            </div>
+        </main>
+        
+        <!-- Final Certificate Screen -->
+        <div id="certificate-screen" class="hidden text-center bg-[#532093] rounded-2xl p-8 comic-panel">
+             <div class="text-yellow-500 text-6xl mb-4">🏆</div>
+             <h2 class="text-3xl font-fredoka text-[#F09738]">Congratulations!</h2>
+             <p class="text-xl mt-2 text-white">You've completed your training and earned your</p>
+             <h3 class="text-4xl font-fredoka text-white my-4">Official Safety Superhero Badge!</h3>
+             <div class="text-9xl">🛡️</div>
+             <p class="mt-6 text-lg text-gray-200">You earned <span id="final-score" class="font-bold"></span> Safety Stars! Keep using your amazing safety powers!</p>
+             <button id="restart-btn" class="mt-8 w-full md:w-auto bg-[#F09738] text-[#361169] font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-[#f3a65a] transition-colors text-xl option-btn">Play Again!</button>
+        </div>
+
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div id="modal-content" class="bg-[#532093] text-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl transform transition-all">
+            <div id="feedback-icon" class="text-7xl mb-4"></div>
+            <h2 id="feedback-title" class="text-3xl font-bold mb-2"></h2>
+            <p id="feedback-explanation" class="text-lg text-gray-200"></p>
+            <button id="next-btn" class="mt-6 w-full bg-[#F09738] text-[#361169] font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#f3a65a] transition-colors text-lg option-btn">Next Question</button>
+        </div>
+    </div>
+
+
+    <script>
+        const scenarios = [
+            {
+                icon: '🚦',
+                question: "You need to cross the street to get to the ice cream truck. What's the superhero way to do it?",
+                options: [
+                    { text: "Run across as fast as possible!", correct: false },
+                    { text: "Look left, right, then left again at a crosswalk.", correct: true },
+                    { text: "Ask a bird to fly you over.", correct: false }
+                ],
+                explanation: "The safest way is to always look both ways and use a designated crosswalk. Safety first, then ice cream!"
+            },
+            {
+                icon: '👤❓',
+                question: "A car you don't know pulls over, and the driver offers you a puppy. What do you do?",
+                options: [
+                    { text: "Say 'No, thank you!' and quickly walk away to a trusted adult.", correct: true },
+                    { text: "Get in the car to pet the puppy.", correct: false },
+                    { text: "Take the puppy and run home.", correct: false }
+                ],
+                explanation: "Never go with or take anything from a stranger. Your safety is more important than a cute puppy. Always tell a trusted adult."
+            },
+            {
+                icon: '🔥',
+                question: "You see matches on the coffee table. What's the smart move?",
+                options: [
+                    { text: "Practice lighting them to see how they work.", correct: false },
+                    { text: "Leave them alone and tell a grown-up right away.", correct: true },
+                    { text: "Hide them so no one else can find them.", correct: false }
+                ],
+                explanation: "Matches and lighters are tools for adults, not toys for kids. Always find a grown-up to handle them."
+            },
+            {
+                icon: '💻',
+                question: "While playing a game online, someone you don't know asks for your name and address. What's the right choice?",
+                options: [
+                    { text: "Tell your parents or guardian immediately.", correct: true },
+                    { text: "Share your details, they seem friendly.", correct: false },
+                    { text: "Make up a silly name and address.", correct: false }
+                ],
+                explanation: "Protect your personal information like a secret identity! Never share it online and always tell a trusted adult if someone asks."
+            },
+            {
+                icon: '⚡',
+                question: "You see a toaster with a fork stuck in it. What should you do?",
+                options: [
+                    { text: "Try to pull the fork out yourself.", correct: false },
+                    { text: "Pour water on it to be safe.", correct: false },
+                    { text: "Don't touch it and get a grown-up immediately!", correct: true }
+                ],
+                explanation: "Electricity and metal (like a fork) are a dangerous combination! Never touch it and always get an adult to help."
+            },
+            {
+                icon: '🚲',
+                question: "You're about to go for a bike ride. What's a crucial piece of superhero gear?",
+                options: [
+                    { text: "A cool cape.", correct: false },
+                    { text: "A helmet to protect your head.", correct: true },
+                    { text: "Super fast shoes.", correct: false }
+                ],
+                explanation: "A helmet is the most important part of your gear! It protects your super-brain while you ride."
+            }
+        ];
+
+        let currentScenarioIndex = 0;
+        let score = 0;
+        let shuffledScenarios = [];
+
+        // DOM Elements
+        const scoreElement = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const gameCard = document.getElementById('game-card');
+        const certificateScreen = document.getElementById('certificate-screen');
+        const finalScoreElement = document.getElementById('final-score');
+        const scenarioIcon = document.getElementById('scenario-icon');
+        const scenarioText = document.getElementById('scenario-text');
+        const optionsContainer = document.getElementById('options-container');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Modal Elements
+        const feedbackModal = document.getElementById('feedback-modal');
+        const modalContent = document.getElementById('modal-content');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackExplanation = document.getElementById('feedback-explanation');
+        const nextBtn = document.getElementById('next-btn');
+
+        function startGame() {
+            currentScenarioIndex = 0;
+            score = 0;
+            shuffledScenarios = [...scenarios].sort(() => Math.random() - 0.5); // Shuffle scenarios
+            updateScore();
+            updateProgressBar();
+            gameCard.style.display = 'block';
+            certificateScreen.style.display = 'none';
+            displayScenario();
+        }
+
+        function displayScenario() {
+            if (currentScenarioIndex >= shuffledScenarios.length) {
+                endGame();
+                return;
+            }
+
+            const currentScenario = shuffledScenarios[currentScenarioIndex];
+            scenarioIcon.textContent = currentScenario.icon;
+            scenarioText.textContent = currentScenario.question;
+            optionsContainer.innerHTML = '';
+
+            currentScenario.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.className = 'w-full bg-[#F09738] text-[#361169] font-bold p-4 rounded-lg shadow-md hover:bg-[#f3a65a] text-lg option-btn';
+                button.onclick = () => selectOption(option, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(option, button) {
+            // Disable all buttons after a choice is made
+            Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+            
+            const isCorrect = option.correct;
+            const explanation = shuffledScenarios[currentScenarioIndex].explanation;
+
+            if (isCorrect) {
+                score++;
+                button.classList.remove('bg-[#F09738]', 'hover:bg-[#f3a65a]', 'text-[#361169]');
+                button.classList.add('bg-green-500', 'text-white');
+                showFeedback(true, explanation);
+            } else {
+                button.classList.remove('bg-[#F09738]', 'hover:bg-[#f3a65a]', 'text-[#361169]');
+                button.classList.add('bg-red-500', 'text-white');
+                showFeedback(false, explanation);
+            }
+            updateScore();
+        }
+
+        function showFeedback(isCorrect, explanation) {
+            if(isCorrect) {
+                feedbackIcon.textContent = '✅';
+                feedbackTitle.textContent = 'Awesome!';
+                feedbackTitle.className = 'text-3xl font-bold mb-2 text-green-600';
+            } else {
+                feedbackIcon.textContent = '❌';
+                feedbackTitle.textContent = 'Oops! Remember...';
+                feedbackTitle.className = 'text-3xl font-bold mb-2 text-red-600';
+            }
+            
+            feedbackExplanation.textContent = explanation;
+
+            if (currentScenarioIndex >= shuffledScenarios.length - 1) {
+                nextBtn.textContent = "See My Badge!";
+            } else {
+                nextBtn.textContent = "Next Question";
+            }
+            
+            feedbackModal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave');
+            modalContent.classList.add('modal-enter');
+        }
+        
+        function handleNext() {
+            currentScenarioIndex++;
+            updateProgressBar();
+            
+            modalContent.classList.remove('modal-enter');
+            modalContent.classList.add('modal-leave');
+            
+            setTimeout(() => {
+                feedbackModal.classList.add('hidden');
+                displayScenario();
+            }, 300);
+        }
+
+        function updateScore() {
+            scoreElement.textContent = score;
+        }
+
+        function updateProgressBar() {
+            const progressPercentage = (currentScenarioIndex / shuffledScenarios.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+        
+        function endGame() {
+            finalScoreElement.textContent = score;
+            gameCard.style.display = 'none';
+            certificateScreen.style.display = 'block';
+            // Final progress bar fill
+            progressBar.style.width = '100%';
+        }
+        
+        // Event Listeners
+        nextBtn.addEventListener('click', handleNext);
+        restartBtn.addEventListener('click', startGame);
+
+        // Initial game start
+        startGame();
+
+    </script>
+</body>
+</html>
+

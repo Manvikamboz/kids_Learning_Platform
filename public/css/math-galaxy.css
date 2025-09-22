@@ -1,0 +1,864 @@
+/* Math Galaxy Specific Styles */
+
+.math-body {
+    background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 50%, #CE93D8 100%);
+}
+
+.math-header {
+    background: linear-gradient(135deg, #9013FE 0%, #7B1FA2 100%);
+}
+
+.math-header .logo-container a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.math-header .logo-text {
+    color: white;
+}
+
+.math-stars {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 193, 7, 0.2);
+    padding: 8px 12px;
+    border-radius: 15px;
+    border: 2px solid #FFC107;
+}
+
+.star-icon {
+    font-size: 1.2rem;
+}
+
+.star-count {
+    font-weight: bold;
+    color: white;
+    font-size: 1rem;
+}
+
+/* Hero Section */
+.math-hero {
+    min-height: 80vh;
+    position: relative;
+    background: linear-gradient(135deg, #4c4ffc 50%, #e330e0 100%);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 100px 0 50px;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.floating-numbers {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.number {
+    position: absolute;
+    font-size: 3rem;
+    animation: floatNumber 5s ease-in-out infinite;
+    opacity: 0.8;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.number:nth-child(1) { top: 15%; left: 15%; animation-delay: 0s; }
+.number:nth-child(2) { top: 70%; left: 85%; animation-delay: 1s; }
+.number:nth-child(3) { top: 25%; left: 75%; animation-delay: 2s; }
+.number:nth-child(4) { top: 85%; left: 25%; animation-delay: 3s; }
+.number:nth-child(5) { top: 45%; left: 10%; animation-delay: 4s; }
+.number:nth-child(6) { top: 60%; left: 60%; animation-delay: 2.5s; }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+.math-title {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.math-subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.world-progress-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-large);
+    padding: 30px;
+    margin: 40px auto 0;
+    max-width: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.world-progress-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.progress-info {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.progress-circle {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 2s ease-in-out;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.progress-details p {
+    margin: 5px 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Learning Path */
+.learning-path {
+    padding: 100px 0;
+    background: white;
+}
+
+.path-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.lesson-path {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+}
+
+.lesson-path::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, #4CAF50, #9013FE, #FF9800, #FF9800, #ccc, #ccc);
+    border-radius: 2px;
+}
+
+.lesson-node {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: var(--border-radius-large);
+    background: white;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.lesson-node::before {
+    content: '';
+    position: absolute;
+    left: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: var(--shadow-soft);
+    z-index: 2;
+}
+
+.lesson-node.completed {
+    border-left: 6px solid var(--primary-green);
+    background: linear-gradient(135deg, var(--pastel-green), white);
+}
+
+.lesson-node.completed::before {
+    background: var(--primary-green);
+    content: '✅';
+}
+
+.lesson-node.current {
+    border-left: 6px solid var(--primary-purple);
+    background: linear-gradient(135deg, var(--pastel-purple), white);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-hover);
+}
+
+.lesson-node.current::before {
+    background: var(--primary-purple);
+    content: '▶️';
+    animation: pulse 2s infinite;
+}
+
+.lesson-node.available {
+    border-left: 6px solid var(--primary-orange);
+    background: linear-gradient(135deg, var(--pastel-orange), white);
+}
+
+.lesson-node.available::before {
+    background: var(--primary-orange);
+    content: '🎯';
+}
+
+.lesson-node.locked {
+    border-left: 6px solid #ccc;
+    background: linear-gradient(135deg, #f5f5f5, white);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.lesson-node.locked::before {
+    background: #ccc;
+    content: '🔒';
+}
+
+.node-icon {
+    font-size: 3rem;
+    margin-left: 60px;
+}
+
+.node-content {
+    flex: 1;
+}
+
+.node-content h4 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.node-content p {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.node-stars {
+    font-size: 1.2rem;
+}
+
+.node-progress {
+    background: var(--pastel-purple);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: var(--primary-purple);
+    display: inline-block;
+}
+
+.node-reward {
+    background: var(--pastel-orange);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: var(--primary-orange);
+    display: inline-block;
+}
+
+/* Games Section */
+.games-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-purple));
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.game-card {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.game-card.number-hunt::before { background: linear-gradient(90deg, #FF6B35, #F7931E); }
+.game-card.shape-builder::before { background: linear-gradient(90deg, #9C27B0, #673AB7); }
+.game-card.pattern-master::before { background: linear-gradient(90deg, #E91E63, #FF4081); }
+.game-card.fraction-pizza::before { background: linear-gradient(90deg, #FF5722, #FF9800); }
+
+.game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+
+.game-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.game-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.game-card p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.game-difficulty {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.difficulty {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.difficulty.easy { background: var(--pastel-green); color: var(--primary-green); }
+.difficulty.medium { background: var(--pastel-yellow); color: var(--primary-yellow); }
+.difficulty.hard { background: var(--pastel-pink); color: var(--primary-pink); }
+
+.time {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.btn-game {
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+    color: white;
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+.btn-game.locked {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Challenge Section */
+.challenge-section {
+    padding: 100px 0;
+    background: white;
+}
+
+.challenge-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.challenge-card {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 40px;
+    box-shadow: var(--shadow-card);
+    border: 3px solid var(--primary-purple);
+}
+
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.challenge-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.challenge-timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--pastel-orange);
+    padding: 10px 15px;
+    border-radius: 15px;
+    border: 2px solid var(--primary-orange);
+}
+
+.timer-icon {
+    font-size: 1.2rem;
+}
+
+.timer-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+}
+
+.math-problem h4 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.problem-display {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.problem-equation {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-purple);
+}
+
+.answer-input {
+    width: 100px;
+    height: 60px;
+    border: 3px solid var(--primary-purple);
+    border-radius: 15px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-purple);
+    background: var(--pastel-purple);
+}
+
+.answer-input:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    background: var(--pastel-orange);
+}
+
+.challenge-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--pastel-purple);
+    border-radius: 15px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-purple);
+    font-family: var(--font-heading);
+}
+
+.challenge-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Tools Section */
+.tools-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, var(--pastel-yellow), var(--pastel-green));
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.tool-card {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.tool-card.calculator { border-color: var(--primary-blue); }
+.tool-card.number-line { border-color: var(--primary-green); }
+.tool-card.times-table { border-color: var(--primary-orange); }
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.tool-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.tool-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.tool-card p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.btn-tool {
+    background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+    color: white;
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+}
+
+/* Achievements Section */
+.achievements-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+}
+
+.achievement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.achievement-badge {
+    background: white;
+    border-radius: var(--border-radius-large);
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-badge.earned {
+    background: linear-gradient(135deg, var(--pastel-purple), white);
+    border: 3px solid var(--primary-purple);
+    transform: scale(1.02);
+}
+
+.achievement-badge.earned .badge-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(144, 19, 254, 0.3), transparent 70%);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.achievement-badge.in-progress {
+    border: 3px solid var(--primary-blue);
+}
+
+.achievement-badge.locked {
+    opacity: 0.6;
+    background: #f5f5f5;
+    border: 2px solid #ccc;
+}
+
+.achievement-badge.mystery {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: 3px solid #9C27B0;
+}
+
+.achievement-badge:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
+
+.badge-icon {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.achievement-badge h4 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    position: relative;
+    z-index: 2;
+}
+
+.achievement-badge.mystery h4 {
+    color: white;
+}
+
+.achievement-badge p {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+}
+
+.achievement-badge.mystery p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.badge-date {
+    font-size: 0.8rem;
+    color: var(--primary-purple);
+    font-weight: 600;
+}
+
+.badge-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-progress .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+.badge-progress .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-purple));
+    border-radius: 3px;
+}
+
+.badge-requirement {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.achievement-badge.mystery .badge-requirement {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Math Mascot */
+.math-mascot {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+    display: flex;
+    align-items: end;
+    gap: 15px;
+}
+
+.math-character {
+    background: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
+    border: 3px solid white;
+}
+
+.mascot-icon {
+    font-size: 1.8rem;
+}
+
+/* Animations */
+@keyframes floatNumber {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    33% { transform: translateY(-15px) rotate(90deg); opacity: 1; }
+    66% { transform: translateY(5px) rotate(180deg); opacity: 0.9; }
+}
+
+@keyframes glow {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .math-title {
+        font-size: 2.5rem;
+    }
+    
+    .progress-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .lesson-path::before {
+        display: none;
+    }
+    
+    .lesson-node::before {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+        order: -1;
+    }
+    
+    .lesson-node {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .node-icon {
+        margin-left: 0;
+        font-size: 2.5rem;
+    }
+    
+    .games-grid,
+    .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .achievement-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .challenge-card {
+        padding: 25px;
+    }
+    
+    .challenge-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .challenge-actions {
+        flex-direction: column;
+    }
+    
+    .problem-equation {
+        font-size: 1.5rem;
+        gap: 10px;
+    }
+    
+    .answer-input {
+        width: 80px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .math-title {
+        font-size: 2rem;
+    }
+    
+    .world-progress-card {
+        padding: 20px;
+    }
+    
+    .lesson-node {
+        padding: 15px;
+    }
+    
+    .game-card,
+    .tool-card {
+        padding: 20px;
+    }
+    
+    .achievement-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .achievement-badge {
+        padding: 20px;
+    }
+    
+    .math-mascot {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .mascot-bubble {
+        max-width: 200px;
+        font-size: 0.8rem;
+    }
+    
+    .problem-equation {
+        font-size: 1.2rem;
+    }
+    
+    .answer-input {
+        width: 60px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}

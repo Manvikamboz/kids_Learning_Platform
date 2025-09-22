@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Amazing Seed Adventure!</title>
+    <link rel="stylesheet" href="../public/css/plant.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <audio id="sound-ding" src="path/to/your/ding.mp3" preload="auto"></audio>
+    <audio id="sound-boing" src="path/to/your/boing.mp3" preload="auto"></audio>
+    <audio id="sound-tada" src="path/to/your/tada.mp3" preload="auto"></audio>
+
+    <header class="hud">
+        <span>LVL 1</span>
+        <div class="xp-bar-container"><div id="xp-bar"></div></div>
+        <div id="coin-counter">⭐ 0</div>
+    </header>
+
+    <main id="game-container">
+        <section id="intro-section" class="card">
+            <div class="mascot-dialogue">
+                <img src="https://assets.website-files.com/6193c3c3a38092451441618a/6195665b169281518f2195f4_612e23737a285c57b9875883_Group_427318788.png" alt="Eco Warrior Mascot" class="mascot-img">
+                <div class="speech-bubble" id="mascot-speech">Hi, Explorer! Ready for The Amazing Seed Adventure?</div>
+            </div>
+            <button id="start-btn" class="btn">🌱 Let's Start!</button>
+        </section>
+
+        <section id="mission-section" class="hidden">
+            <h2>Adventure Map</h2>
+            <div id="mission-map" class="card">
+                <div id="map-1" class="map-stage unlocked">1</div>
+                <div id="map-2" class="map-stage">2</div>
+                <div id="map-3" class="map-stage">3</div>
+                <div id="map-4" class="map-stage">4</div>
+                <div id="map-5" class="map-stage">5</div>
+            </div>
+            <div id="stage-container" class="card"></div>
+        </section>
+    </main>
+
+    <div id="completion-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h1>Mission Complete!</h1>
+            <div class="badge-icon">🎖️</div>
+            <p class="reward-item">New Badge: <strong>"Green Thumb Guru"</strong></p>
+            <button id="restart-btn-win" class="btn btn-blue">Play Again</button>
+        </div>
+    </div>
+
+    <div id="game-over-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h1>Oops!</h1>
+            <div class="badge-icon">🤔</div>
+            <p class="reward-item" id="game-over-message">That wasn't quite right.</p>
+            <button id="restart-btn-lose" class="btn btn-yellow">Try Again</button>
+        </div>
+    </div>
+
+    <script src="../public/js/plant.js"></script>
+</body>
+</html>
